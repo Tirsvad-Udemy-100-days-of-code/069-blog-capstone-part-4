@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | pending |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [b33c3f1] |
 
 ---
 
@@ -58,3 +58,4 @@ No-Go — a Mandatory criterion fails.
 
 [PY-MIL-004]: ../../../src/blog/
 [QC-PY-001]: ../../../framework/qc/code/qc-programming-python.md
+[b33c3f1]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/b33c3f1ec7d399111c216fb27f15d437c08932ad
