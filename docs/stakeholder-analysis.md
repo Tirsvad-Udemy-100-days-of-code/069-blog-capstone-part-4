@@ -11,14 +11,14 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [335e45c] |
-| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-002; autonomous, not independent | [335e45c] |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Scope amended: the application code is in scope (S01 corrected the first prompt) | [3028e2d] |
+| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-009; autonomous, not independent | [3028e2d] |
 
 ---
 
 ## Purpose
 
-Identify who is involved in the Day 69 documentation project and what each needs from it. The analysis uses the power/interest grid.
+Identify who is involved in the Day 69 blog project (code, README and wiki) and what each needs from it. The analysis uses the power/interest grid.
 
 ## Stakeholder Summary Table
 
@@ -26,7 +26,7 @@ Identify who is involved in the Day 69 documentation project and what each needs
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | S01 | Jens Tirsvad Nielsen | Course participant; Product Owner, developer and reviewer | Tirsvad | HIGH | HIGH | Manage Closely | A correct, reviewed record of what the lecture teaches |
 | S02 | Udemy coursists | Course participants who share code and compare solutions | Udemy community | LOW | HIGH | Keep Informed | Readable, runnable instructions with the assignment's function names |
-| S03 | GitHub viewers | Readers who browse the repository for ideas | Public | LOW | LOW | Monitor | A clear description, topics and README, and no runtime dependencies |
+| S03 | GitHub viewers | Readers who browse the repository for ideas | Public | LOW | LOW | Monitor | A clear description, topics and README, and only the runtime dependencies the lecture needs |
 
 ## Power/Interest Classification Rationale
 
@@ -42,7 +42,7 @@ Identify who is involved in the Day 69 documentation project and what each needs
 | CN-002 | S02 | Instructions that run as written (local `.venv`, tests) | Usability |
 | CN-003 | S02 | Wiki readable in their own language | Usability |
 | CN-004 | S03 | Clear description, topics and README at first glance | Usability |
-| CN-005 | S03 | No runtime dependencies to install | Functionality |
+| CN-005 | S03 | Only the runtime dependencies the lecture needs | Functionality |
 
 ## Communication Requirements
 
@@ -55,7 +55,7 @@ Identify who is involved in the Day 69 documentation project and what each needs
 
 | Conflict | Stakeholders | Mitigation |
 | --- | --- | --- |
-| S02 wants runnable code; the project delivers documentation only | S02, S01 | The README states the scope and how to set up a local `.venv` |
+| S02 wants runnable code with the assignment's function names; S03 wants few dependencies | S02, S01 | The blog keeps the assignment's route and function names and only the lecture's packages; the README says how to set up a local `.venv` |
 
 ## Traceability Analysis
 
@@ -77,3 +77,4 @@ Identify who is involved in the Day 69 documentation project and what each needs
 
 [BC-001]: ./business-case.md
 [335e45c]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/335e45c12d38b764705336eefde51af3c16930b2
+[3028e2d]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/3028e2d2f42bac50beb12082513c6319e62eca74
