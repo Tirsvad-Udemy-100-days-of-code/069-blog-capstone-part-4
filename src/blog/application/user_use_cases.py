@@ -11,7 +11,7 @@ from blog.domain.errors import (
     InvalidCredentialsError,
     UnknownEmailError,
 )
-from blog.domain.user import User
+from blog.domain.user import User, normalise_email
 from blog.domain.user_repository import UserRepository
 
 
@@ -34,11 +34,12 @@ class RegisterUser:
         @return The stored user; only the hash of the password is kept.
         @throws EmailAlreadyRegisteredError When the email is taken.
         """
-        if self._repository.get_by_email(registration.email) is not None:
-            raise EmailAlreadyRegisteredError(registration.email)
+        email = normalise_email(registration.email)
+        if self._repository.get_by_email(email) is not None:
+            raise EmailAlreadyRegisteredError(email)
         user = User(
             id=None,
-            email=registration.email,
+            email=email,
             password_hash=self._hasher.hash(registration.password),
             name=registration.name,
         )
@@ -66,7 +67,7 @@ class AuthenticateUser:
         @throws UnknownEmailError When no user has the email.
         @throws InvalidCredentialsError When the password does not match.
         """
-        user = self._repository.get_by_email(email)
+        user = self._repository.get_by_email(normalise_email(email))
         if user is None:
             raise UnknownEmailError(email)
         if not self._hasher.verify(user.password_hash, password):

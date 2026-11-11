@@ -26,3 +26,12 @@ def is_admin(user: User | None) -> bool:
     @return True only for the admin.
     """
     return user is not None and user.id == ADMIN_USER_ID
+
+
+def normalise_email(email: str) -> str:
+    """
+    @brief Put an email in the form used to compare and store it.
+    @param email The email as entered.
+    @return The email without surrounding spaces and in lower case.
+    """
+    return email.strip().lower()

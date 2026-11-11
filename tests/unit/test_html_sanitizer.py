@@ -76,3 +76,8 @@ def test_edit_post_stores_sanitized_body() -> None:
         1, PostContent("t", "s", "/i.jpg", '<p onclick="x()">y</p>')
     )
     assert edited.body == "<p>y</p>"
+
+
+def test_text_of_removes_all_tags() -> None:
+    """@brief Only the text is left."""
+    assert SANITIZER.text_of("<p>Hi <strong>you</strong></p>") == "Hi you"

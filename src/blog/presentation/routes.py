@@ -4,9 +4,10 @@
 @brief Route functions: each calls a use case and renders a view model.
 """
 
+from dataclasses import replace
 from typing import cast
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, flash, redirect, render_template, url_for
 from werkzeug.wrappers import Response
 
 from blog.constants import (
@@ -18,12 +19,14 @@ from blog.constants import (
     CONTACT_HEADING,
     CONTACT_SUBHEADING,
     CONTACT_TEXT,
+    FLASH_EMPTY_COMMENT,
+    FLASH_LOGIN_TO_COMMENT,
     PAGE_TITLE_EDIT_POST,
     PAGE_TITLE_FORBIDDEN,
     PAGE_TITLE_NEW_POST,
     PAGE_TITLE_NOT_FOUND,
 )
-from blog.domain.errors import PostNotFoundError
+from blog.domain.errors import EmptyCommentError, PostNotFoundError
 from blog.domain.user import User
 from blog.presentation.auth_routes import register_auth_routes
 from blog.presentation.authorisation import (
@@ -31,9 +34,10 @@ from blog.presentation.authorisation import (
     current_domain_user,
     current_user_is_admin,
 )
-from blog.presentation.forms import PostForm
+from blog.presentation.forms import CommentForm, PostForm
 from blog.presentation.services import current_use_cases
 from blog.presentation.view_models import (
+    CommentViewModel,
     FormPageViewModel,
     HomeViewModel,
     PostPageViewModel,
@@ -59,15 +63,36 @@ def get_all_posts() -> str:
     return render_template("index.html", view=view)
 
 
-def show_post(post_id: int) -> str:
+def show_post(post_id: int) -> str | Response:
     """
-    @brief Show one post.
+    @brief Show one post with its comments, or store a submitted comment.
     @param post_id The id of the post.
-    @return The page; a 404 when the post does not exist.
+    @return The page; a redirect to the login page when a visitor who is not
+            logged in submits a comment, or back to the post after saving; a
+            404 when the post does not exist.
     """
-    post = to_post_view_model(current_use_cases().get_post.execute(post_id))
+    use_cases = current_use_cases()
+    post = to_post_view_model(use_cases.get_post.execute(post_id))
+    form = CommentForm()
+    if form.validate_on_submit():
+        author = current_domain_user()
+        if author is None:
+            flash(FLASH_LOGIN_TO_COMMENT)
+            return redirect(url_for("login"))
+        try:
+            use_cases.add_comment.execute(form.comment_text.data or "", author, post_id)
+        except EmptyCommentError:
+            flash(FLASH_EMPTY_COMMENT)
+        return redirect(url_for("show_post", post_id=post_id))
+    comments = tuple(
+        CommentViewModel(c.author_name, c.text, c.avatar_url)
+        for c in use_cases.list_comments.execute(post_id)
+    )
     view = PostPageViewModel(
-        site_name=APP_NAME, post=post, is_admin=current_user_is_admin()
+        site_name=APP_NAME,
+        post=replace(post, comments=comments),
+        is_admin=current_user_is_admin(),
+        form=form,
     )
     return render_template("post.html", view=view)
 
@@ -186,7 +211,9 @@ def register_routes(app: Flask) -> None:
     @param app The application.
     """
     app.add_url_rule("/", view_func=get_all_posts)
-    app.add_url_rule("/post/<int:post_id>", view_func=show_post)
+    app.add_url_rule(
+        "/post/<int:post_id>", view_func=show_post, methods=["GET", "POST"]
+    )
     app.add_url_rule("/new-post", view_func=add_new_post, methods=["GET", "POST"])
     app.add_url_rule(
         "/edit-post/<int:post_id>", view_func=edit_post, methods=["GET", "POST"]

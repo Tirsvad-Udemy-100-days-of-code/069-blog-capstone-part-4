@@ -135,6 +135,30 @@ LABEL_PASSWORD: Final[str] = "Password"  # noqa: S105
 LABEL_USER_NAME: Final[str] = "Name"
 """@brief Label of the name field of the register form."""
 
+GRAVATAR_BASE_URL: Final[str] = "https://www.gravatar.com/avatar"
+"""@brief Address that serves Gravatar images."""
+
+GRAVATAR_SIZE: Final[int] = 100
+"""@brief Side of the avatar image in pixels."""
+
+GRAVATAR_DEFAULT_IMAGE: Final[str] = "retro"
+"""@brief Image Gravatar draws when an email has no avatar."""
+
+GRAVATAR_RATING: Final[str] = "g"
+"""@brief Highest content rating of the avatar."""
+
+LABEL_COMMENT: Final[str] = "Comment"
+"""@brief Label of the comment field."""
+
+LABEL_COMMENT_SUBMIT: Final[str] = "Submit Comment"
+"""@brief Label of the comment button."""
+
+FLASH_LOGIN_TO_COMMENT: Final[str] = "You need to login or register to comment."
+"""@brief Shown when a visitor who is not logged in submits a comment."""
+
+FLASH_EMPTY_COMMENT: Final[str] = "Your comment is empty, nothing was saved."
+"""@brief Shown when a comment has no text left after cleaning."""
+
 LABEL_REGISTER_SUBMIT: Final[str] = "Sign Me Up!"
 """@brief Label of the register button."""
 

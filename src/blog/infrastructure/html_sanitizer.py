@@ -33,3 +33,11 @@ class BleachHtmlSanitizer:
             protocols=ALLOWED_HTML_PROTOCOLS,
             strip=True,
         )
+
+    def text_of(self, html: str) -> str:
+        """
+        @brief Read the plain text of a piece of HTML.
+        @param html The HTML.
+        @return The text with every tag removed.
+        """
+        return str(bleach.clean(html, tags=set(), strip=True))

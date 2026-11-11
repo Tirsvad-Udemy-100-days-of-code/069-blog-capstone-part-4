@@ -24,3 +24,12 @@ class Registration:
     email: str
     password: str
     name: str
+
+
+@dataclass(frozen=True, slots=True)
+class CommentDetails:
+    """@brief A comment as the pages show it."""
+
+    author_name: str
+    text: str
+    avatar_url: str
