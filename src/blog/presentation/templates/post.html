@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% set site_name = view.site_name %}
+{% block header %}
+<header class="masthead" style="background-image: url('{{ view.post.img_url }}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="post-heading">
+                    <h1>{{ view.post.title }}</h1>
+                    <h2 class="subheading">{{ view.post.subtitle }}</h2>
+                    <span class="meta">Posted by {{ view.post.author }} on {{ view.post.date }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+{% block content %}
+<article class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                {# The body is sanitised by the CreatePost and EditPost use cases before it is stored. #}
+                {{ view.post.body|safe }}
+                <div class="d-flex justify-content-end mt-4">
+                    <a class="btn btn-primary text-uppercase me-2" href="{{ url_for('edit_post', post_id=view.post.id) }}">Edit Post</a>
+                    {# False positive below: Flask-WTF, the form carries csrf_token(). #}
+                    <!-- nosemgrep: python.django.security.django-no-csrf-token.django-no-csrf-token -->
+                    <form method="post" action="{{ url_for('delete_post', post_id=view.post.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <button class="btn btn-danger text-uppercase" type="submit">Delete Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}
