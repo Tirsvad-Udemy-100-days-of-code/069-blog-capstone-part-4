@@ -3,8 +3,8 @@
 ## Metadata
 | Key | Value |
 | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Review of the wiki rewritten with the real screenshots | pending |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Criterion 14 closed after publishing: verdict Go | pending |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Review of the wiki rewritten with the real screenshots | [e9703e9] |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Criterion 14 closed after publishing: verdict Go | [e9703e9] |
 
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
@@ -57,3 +57,4 @@ Go — every Mandatory criterion passes; criterion 14 was closed after the merge
 ---
 
 [QC-WIKI-001]: ../../../framework/qc/artifacts/qc-wiki.md
+[e9703e9]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/e9703e96ff1f2286811097994aa5d0263a7c3fad
