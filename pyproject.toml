@@ -5,19 +5,51 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "blog-capstone-part-4-day-69"
 version = "0.1.0"
-description = "Udemy 100 Days of Code, Day 69: blog capstone part 4, adding users and authentication (README and wiki)."
+description = "Udemy 100 Days of Code, Day 69: blog capstone part 4, a Flask blog (this milestone: posts without users)."
 readme = "README.md"
 requires-python = ">=3.13"
 license = "AGPL-3.0-only"
-# No runtime dependencies: this repository documents the lecture only.
-dependencies = []
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.txt"]
+dependencies = [
+    "flask>=3.0",
+    "flask-sqlalchemy>=3.1",
+    "flask-wtf>=1.2",
+    "flask-ckeditor>=0.5",
+    "bootstrap-flask>=2.4",
+    "bleach>=6.1",
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "pytest-cov", "ruff", "mypy", "types-WTForms", "types-bleach"]
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# The Clean Blog templates and static files (MIT, see THIRD_PARTY_NOTICES.txt).
+blog = ["presentation/templates/*.html", "presentation/static/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "--cov=blog --cov-branch --cov-report=term-missing"
+
+[tool.ruff]
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "S", "ANN"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.mypy]
+strict = true
+mypy_path = "src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+# These Flask extensions ship neither type hints nor a py.typed marker.
+module = ["flask_ckeditor", "flask_wtf", "flask_bootstrap"]
+ignore_missing_imports = true

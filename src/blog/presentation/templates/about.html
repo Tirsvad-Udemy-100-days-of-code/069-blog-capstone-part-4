@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set site_name = view.page.site_name %}
+{% block header %}
+{% with page=view.page, image_url=url_for('static', filename='assets/img/about-bg.jpg') %}{% include "masthead.html" %}{% endwith %}
+{% endblock %}
+{% block content %}
+<main class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                {% for paragraph in view.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
