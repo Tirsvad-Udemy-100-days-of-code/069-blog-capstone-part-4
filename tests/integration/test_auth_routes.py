@@ -169,10 +169,10 @@ def test_user_repository_rejects_duplicate_email(app: Flask) -> None:
         assert repository.get_by_id(2) is None
 
 
-def test_posts_are_not_changed_by_registering(client: FlaskClient) -> None:
-    """@brief Signing up leaves the posts as they were."""
+def test_registering_does_not_create_posts(client: FlaskClient) -> None:
+    """@brief Signing up adds no post."""
     client.post("/register", data=SIGN_UP)
-    assert _html(client, "/").count("post-title") == 3
+    assert "post-title" not in _html(client, "/")
 
 
 def test_login_user_rejects_unsaved_user() -> None:

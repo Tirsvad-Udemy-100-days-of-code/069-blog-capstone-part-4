@@ -10,6 +10,7 @@ from blog.application.dto import PostContent
 from blog.application.ports import Clock, HtmlSanitizer
 from blog.domain.post import BlogPost, format_post_date
 from blog.domain.post_repository import PostRepository
+from blog.domain.user import User
 
 
 class ListPosts:
@@ -69,10 +70,11 @@ class CreatePost:
         self._clock = clock
         self._sanitizer = sanitizer
 
-    def execute(self, content: PostContent) -> BlogPost:
+    def execute(self, content: PostContent, author: User) -> BlogPost:
         """
         @brief Run the use case.
         @param content What the author wrote.
+        @param author The user who writes the post.
         @return The stored post.
         """
         post = BlogPost(
@@ -81,14 +83,14 @@ class CreatePost:
             subtitle=content.subtitle,
             date=format_post_date(self._clock.today()),
             body=self._sanitizer.sanitize(content.body),
-            author=content.author,
+            author=author,
             img_url=content.img_url,
         )
         return self._repository.add(post)
 
 
 class EditPost:
-    """@brief Change what the author wrote; the date stays."""
+    """@brief Change what the author wrote; the date and the author stay."""
 
     def __init__(self, repository: PostRepository, sanitizer: HtmlSanitizer) -> None:
         """
@@ -113,7 +115,6 @@ class EditPost:
             title=content.title,
             subtitle=content.subtitle,
             img_url=content.img_url,
-            author=content.author,
             body=self._sanitizer.sanitize(content.body),
         )
         return self._repository.update(changed)

@@ -26,7 +26,6 @@ from blog.infrastructure.database import db
 from blog.infrastructure.html_sanitizer import BleachHtmlSanitizer
 from blog.infrastructure.password_hasher import WerkzeugPasswordHasher
 from blog.infrastructure.post_repository import SqlAlchemyPostRepository
-from blog.infrastructure.seed import seed_posts_if_empty
 from blog.infrastructure.user_repository import SqlAlchemyUserRepository
 from blog.presentation.auth import init_login_manager
 from blog.presentation.config import default_config
@@ -39,7 +38,7 @@ def create_app(config: Mapping[str, object] | None = None) -> Flask:
     @brief Build the application; the one place that creates the adapters.
     @param config Settings that replace the defaults (for example the testing
            configuration); None keeps the defaults.
-    @return The application, with its tables created and example posts seeded.
+    @return The application, with its tables created.
     """
     app = Flask(
         __name__,
@@ -73,5 +72,4 @@ def create_app(config: Mapping[str, object] | None = None) -> Flask:
 
     with app.app_context():
         db.create_all()
-        seed_posts_if_empty(repository)
     return app

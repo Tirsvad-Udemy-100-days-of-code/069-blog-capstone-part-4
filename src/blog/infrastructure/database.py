@@ -5,11 +5,10 @@
 """
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import ForeignKey, Integer, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from blog.constants import (
-    AUTHOR_MAX_LENGTH,
     DATE_MAX_LENGTH,
     EMAIL_MAX_LENGTH,
     IMG_URL_MAX_LENGTH,
@@ -41,6 +40,7 @@ class UserModel(Base):
         String(PASSWORD_HASH_MAX_LENGTH), nullable=False
     )
     name: Mapped[str] = mapped_column(String(NAME_MAX_LENGTH), nullable=False)
+    posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
 
 
 class PostModel(Base):
@@ -53,5 +53,6 @@ class PostModel(Base):
     subtitle: Mapped[str] = mapped_column(String(SUBTITLE_MAX_LENGTH), nullable=False)
     date: Mapped[str] = mapped_column(String(DATE_MAX_LENGTH), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    author: Mapped[str] = mapped_column(String(AUTHOR_MAX_LENGTH), nullable=False)
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    author: Mapped[UserModel] = relationship(back_populates="posts")
     img_url: Mapped[str] = mapped_column(String(IMG_URL_MAX_LENGTH), nullable=False)

@@ -12,7 +12,7 @@ from blog.domain.user import User
 from blog.infrastructure.database import UserModel, db
 
 
-def _to_domain(row: UserModel) -> User:
+def user_to_domain(row: UserModel) -> User:
     """
     @brief Map a table row to the domain entity.
     @param row The row.
@@ -38,7 +38,7 @@ class SqlAlchemyUserRepository:
         except IntegrityError as error:
             db.session.rollback()
             raise EmailAlreadyRegisteredError(user.email) from error
-        return _to_domain(row)
+        return user_to_domain(row)
 
     def get_by_id(self, user_id: int) -> User | None:
         """
@@ -47,7 +47,7 @@ class SqlAlchemyUserRepository:
         @return The user, or None when there is none.
         """
         row = db.session.get(UserModel, user_id)
-        return None if row is None else _to_domain(row)
+        return None if row is None else user_to_domain(row)
 
     def get_by_email(self, email: str) -> User | None:
         """
@@ -58,4 +58,4 @@ class SqlAlchemyUserRepository:
         row = db.session.scalars(
             select(UserModel).where(UserModel.email == email)
         ).first()
-        return None if row is None else _to_domain(row)
+        return None if row is None else user_to_domain(row)

@@ -1,55 +1,49 @@
 """
 @file
 @package tests.integration.test_routes
-@brief Every route through the Flask test client against in-memory SQLite.
+@brief The post routes as the admin, through the Flask test client.
 """
 
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from blog.constants import SECRET_KEY_ENV_VAR, SEED_POSTS
-from blog.domain.errors import PostNotFoundError
-from blog.presentation.app import create_app
-from blog.presentation.config import TESTING_CONFIG, default_config
-
-VALID_FORM = {
-    "title": "My new post",
-    "subtitle": "About tests",
-    "img_url": "https://example.com/a.jpg",
-    "author": "Tester",
-    "body": "<p>Hello <strong>world</strong></p>",
-}
+from blog.constants import SECRET_KEY_ENV_VAR
+from blog.presentation.config import default_config
+from tests.integration.conftest import ADMIN_NAME, POST_TITLES, post_form
 
 
-def test_get_all_posts_lists_seeded_posts(client: FlaskClient) -> None:
-    """@brief The home page shows every seeded title and links to it."""
+def test_get_all_posts_lists_posts_with_author(
+    app_with_posts: Flask, client: FlaskClient
+) -> None:
+    """@brief The home page shows every title, the author name and links."""
     response = client.get("/")
     html = response.get_data(as_text=True)
     assert response.status_code == 200
-    for item in SEED_POSTS:
-        assert item["title"] in html
+    for title in POST_TITLES:
+        assert title in html
+    assert f"Posted by {ADMIN_NAME}" in html
     assert "/post/1" in html
     assert "Clean Blog" in html
 
 
-def test_get_all_posts_shows_message_when_no_posts(
-    app: Flask, client: FlaskClient
-) -> None:
-    """@brief An empty blog shows a message instead of previews."""
-    for post_id in (1, 2, 3):
-        client.post(f"/delete/{post_id}")
+def test_get_all_posts_shows_empty_state_without_posts(client: FlaskClient) -> None:
+    """@brief A new blog shows "No posts yet"."""
     html = client.get("/").get_data(as_text=True)
-    assert "There are no posts yet." in html
+    assert "No posts yet" in html
+    assert "post-title" not in html
 
 
-def test_show_post_renders_post_with_html_body(client: FlaskClient) -> None:
-    """@brief The post page shows the title and the unescaped body."""
+def test_show_post_renders_post_with_html_body_and_author(
+    app_with_posts: Flask, client: FlaskClient
+) -> None:
+    """@brief The post page shows the title, author name and the body markup."""
     response = client.get("/post/1")
     html = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert SEED_POSTS[0]["title"] in html
-    assert SEED_POSTS[0]["body"] in html
+    assert "First post" in html
+    assert f"Posted by {ADMIN_NAME}" in html
+    assert "<p>Hello</p>" in html
 
 
 def test_show_post_returns_404_for_unknown_id(client: FlaskClient) -> None:
@@ -66,123 +60,145 @@ def test_unknown_url_returns_404_page(client: FlaskClient) -> None:
     assert "Post not found" in response.get_data(as_text=True)
 
 
-def test_add_new_post_form_renders_all_fields(client: FlaskClient) -> None:
-    """@brief The create page renders the form with the editor."""
-    response = client.get("/new-post")
-    html = response.get_data(as_text=True)
-    assert response.status_code == 200
-    for name in ("title", "subtitle", "img_url", "author", "body", "submit"):
+def test_add_new_post_form_renders_fields_without_author(
+    admin_client: FlaskClient,
+) -> None:
+    """@brief The create page renders the form and the editor, with no author."""
+    html = admin_client.get("/new-post").get_data(as_text=True)
+    for name in ("title", "subtitle", "img_url", "body", "submit"):
         assert f'name="{name}"' in html
+    assert 'name="author"' not in html
     assert "ckeditor" in html.lower()
 
 
-def test_add_new_post_stores_post_and_redirects(client: FlaskClient) -> None:
-    """@brief A valid submission is saved and shown on the home page."""
-    response = client.post("/new-post", data=VALID_FORM)
+def test_add_new_post_stores_post_with_admin_as_author(
+    admin_client: FlaskClient, client: FlaskClient
+) -> None:
+    """@brief A valid submission is saved with the logged in user as author."""
+    response = admin_client.post("/new-post", data=post_form())
     assert response.status_code == 302
     assert response.headers["Location"] == "/"
-    assert "My new post" in client.get("/").get_data(as_text=True)
-    assert "<strong>world</strong>" in client.get("/post/4").get_data(as_text=True)
+    html = client.get("/post/1").get_data(as_text=True)
+    assert "My new post" in html
+    assert f"Posted by {ADMIN_NAME}" in html
 
 
-def test_add_new_post_strips_script_from_body(client: FlaskClient) -> None:
+def test_add_new_post_rejects_invalid_form(
+    admin_client: FlaskClient, client: FlaskClient
+) -> None:
+    """@brief An empty title shows the form again with the message."""
+    response = admin_client.post("/new-post", data={**post_form(), "title": ""})
+    assert response.status_code == 200
+    assert "This field is required." in response.get_data(as_text=True)
+    assert client.get("/post/1").status_code == 404
+
+
+def test_add_new_post_rejects_malformed_image_address(
+    admin_client: FlaskClient, client: FlaskClient
+) -> None:
+    """@brief An image address that is no URL or path is refused."""
+    data = {**post_form(), "img_url": "not a url"}
+    response = admin_client.post("/new-post", data=data)
+    assert "Enter an http(s) address or a path." in response.get_data(as_text=True)
+    assert client.get("/post/1").status_code == 404
+
+
+def test_add_new_post_strips_script_from_body(
+    admin_client: FlaskClient, client: FlaskClient
+) -> None:
     """@brief A script in the body is removed before it is stored and shown."""
-    data = {**VALID_FORM, "body": "<p>ok</p><script>alert(1)</script>"}
-    client.post("/new-post", data=data)
-    html = client.get("/post/4").get_data(as_text=True)
+    body = "<p>ok</p><script>alert(1)</script>"
+    admin_client.post("/new-post", data=post_form(body=body))
+    html = client.get("/post/1").get_data(as_text=True)
     assert "<p>ok</p>" in html
     assert "<script>alert(1)" not in html
 
 
-def test_edit_post_strips_script_from_body(client: FlaskClient) -> None:
+def test_edit_post_form_is_prefilled(
+    app_with_posts: Flask, admin_client: FlaskClient
+) -> None:
+    """@brief The edit page holds the stored values."""
+    html = admin_client.get("/edit-post/1").get_data(as_text=True)
+    assert "First post" in html
+    assert 'name="author"' not in html
+
+
+def test_edit_post_saves_changes_and_keeps_date_and_author(
+    app_with_posts: Flask, admin_client: FlaskClient, client: FlaskClient
+) -> None:
+    """@brief A valid edit changes the text but not the author."""
+    before = client.get("/post/1").get_data(as_text=True)
+    response = admin_client.post("/edit-post/1", data=post_form("Changed title"))
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/post/1"
+    html = client.get("/post/1").get_data(as_text=True)
+    assert "Changed title" in html
+    assert f"Posted by {ADMIN_NAME}" in html
+    date_text = before.split(" on ")[1].split("<")[0]
+    assert date_text in html
+
+
+def test_edit_post_strips_script_from_body(
+    app_with_posts: Flask, admin_client: FlaskClient, client: FlaskClient
+) -> None:
     """@brief A script added by an edit is removed too."""
-    data = {**VALID_FORM, "body": '<p onclick="x()">ok</p><script>bad()</script>'}
-    client.post("/edit-post/1", data=data)
+    body = '<p onclick="x()">ok</p><script>bad()</script>'
+    admin_client.post("/edit-post/1", data=post_form(body=body))
     html = client.get("/post/1").get_data(as_text=True)
     assert "<script>bad()" not in html
     assert "onclick" not in html
 
 
-def test_add_new_post_rejects_invalid_form(client: FlaskClient) -> None:
-    """@brief An empty title shows the form again with the message."""
-    data = {**VALID_FORM, "title": ""}
-    response = client.post("/new-post", data=data)
-    assert response.status_code == 200
-    assert "This field is required." in response.get_data(as_text=True)
-    assert client.get("/post/4").status_code == 404
-
-
-def test_add_new_post_rejects_malformed_image_address(client: FlaskClient) -> None:
-    """@brief An image address that is no URL or path is refused."""
-    data = {**VALID_FORM, "img_url": "not a url"}
-    response = client.post("/new-post", data=data)
-    assert "Enter an http(s) address or a path." in response.get_data(as_text=True)
-    assert client.get("/post/4").status_code == 404
-
-
-def test_edit_post_form_is_prefilled(client: FlaskClient) -> None:
-    """@brief The edit page holds the stored values."""
-    html = client.get("/edit-post/1").get_data(as_text=True)
-    assert SEED_POSTS[0]["title"] in html
-    assert SEED_POSTS[0]["author"] in html
-
-
-def test_edit_post_saves_changes_and_keeps_date(client: FlaskClient) -> None:
-    """@brief A valid edit changes the text, redirects, and keeps the date."""
-    response = client.post("/edit-post/1", data=VALID_FORM)
-    assert response.status_code == 302
-    assert response.headers["Location"] == "/post/1"
-    html = client.get("/post/1").get_data(as_text=True)
-    assert "My new post" in html
-    assert SEED_POSTS[0]["date"] in html
-
-
-def test_edit_post_rejects_invalid_form(client: FlaskClient) -> None:
+def test_edit_post_rejects_invalid_form(
+    app_with_posts: Flask, admin_client: FlaskClient, client: FlaskClient
+) -> None:
     """@brief An invalid edit shows the form and changes nothing."""
-    response = client.post("/edit-post/1", data={**VALID_FORM, "author": ""})
+    data = {**post_form(), "subtitle": ""}
+    response = admin_client.post("/edit-post/1", data=data)
     assert response.status_code == 200
-    assert SEED_POSTS[0]["title"] in client.get("/post/1").get_data(as_text=True)
+    assert "First post" in client.get("/post/1").get_data(as_text=True)
 
 
-def test_edit_post_returns_404_for_unknown_id(client: FlaskClient) -> None:
-    """@brief Editing an unknown post gives 404 for GET and POST."""
-    assert client.get("/edit-post/999").status_code == 404
-    assert client.post("/edit-post/999", data=VALID_FORM).status_code == 404
+def test_edit_post_returns_404_for_unknown_id(admin_client: FlaskClient) -> None:
+    """@brief The admin editing an unknown post gets 404 for GET and POST."""
+    assert admin_client.get("/edit-post/999").status_code == 404
+    assert admin_client.post("/edit-post/999", data=post_form()).status_code == 404
 
 
-def test_delete_post_removes_post_and_redirects(client: FlaskClient) -> None:
+def test_delete_post_removes_post_and_redirects(
+    app_with_posts: Flask, admin_client: FlaskClient, client: FlaskClient
+) -> None:
     """@brief A delete removes the post and returns to the home page."""
-    response = client.post("/delete/2")
+    response = admin_client.post("/delete/2")
     assert response.status_code == 302
     assert response.headers["Location"] == "/"
     assert client.get("/post/2").status_code == 404
     assert client.get("/post/1").status_code == 200
 
 
-def test_delete_post_returns_404_for_unknown_id(client: FlaskClient) -> None:
-    """@brief Deleting an unknown post gives 404."""
-    assert client.post("/delete/999").status_code == 404
+def test_delete_post_returns_404_for_unknown_id(admin_client: FlaskClient) -> None:
+    """@brief The admin deleting an unknown post gets 404."""
+    assert admin_client.post("/delete/999").status_code == 404
 
 
-def test_delete_post_rejects_get(client: FlaskClient) -> None:
-    """@brief Deleting by GET is not allowed."""
-    assert client.get("/delete/1").status_code == 405
-    assert client.get("/post/1").status_code == 200
+def test_delete_post_rejects_get(
+    app_with_posts: Flask, admin_client: FlaskClient
+) -> None:
+    """@brief Deleting by GET is not allowed, even for the admin."""
+    assert admin_client.get("/delete/1").status_code == 405
+    assert admin_client.get("/post/1").status_code == 200
 
 
-def test_delete_post_needs_csrf_token_when_csrf_enabled() -> None:
+def test_delete_post_needs_csrf_token_when_csrf_enabled(csrf_app: Flask) -> None:
     """@brief With CSRF on, a delete without the token is refused."""
-    app = create_app({**TESTING_CONFIG, "WTF_CSRF_ENABLED": True})
-    client = app.test_client()
-    assert client.post("/delete/1").status_code == 400
-    assert client.get("/post/1").status_code == 200
+    assert csrf_app.test_client().post("/delete/1").status_code == 400
 
 
-def test_delete_forms_in_templates_carry_csrf_token() -> None:
+def test_delete_forms_carry_csrf_token(
+    app_with_posts: Flask, admin_client: FlaskClient
+) -> None:
     """@brief The delete control is a POST form with a CSRF token."""
-    app = create_app({**TESTING_CONFIG, "WTF_CSRF_ENABLED": True})
-    client = app.test_client()
-    html = client.get("/post/1").get_data(as_text=True)
+    html = admin_client.get("/post/1").get_data(as_text=True)
     assert 'action="/delete/1"' in html
     assert 'name="csrf_token"' in html
 
@@ -199,29 +215,6 @@ def test_contact_page_renders(client: FlaskClient) -> None:
     response = client.get("/contact")
     assert response.status_code == 200
     assert "Contact Me" in response.get_data(as_text=True)
-
-
-def test_seed_runs_once_per_database(app: Flask) -> None:
-    """@brief Creating the app again on the same data adds no posts."""
-    from blog.infrastructure.post_repository import SqlAlchemyPostRepository
-    from blog.infrastructure.seed import seed_posts_if_empty
-
-    with app.app_context():
-        assert seed_posts_if_empty(SqlAlchemyPostRepository()) == 0
-
-
-def test_repository_raises_for_missing_and_unsaved_posts(app: Flask) -> None:
-    """@brief The repository refuses unknown ids and posts without id."""
-    from blog.domain.post import BlogPost
-    from blog.infrastructure.post_repository import SqlAlchemyPostRepository
-
-    repository = SqlAlchemyPostRepository()
-    unsaved = BlogPost(None, "t", "s", "d", "b", "a", "/i")
-    with app.app_context():
-        with pytest.raises(PostNotFoundError):
-            repository.get(999)
-        with pytest.raises(PostNotFoundError):
-            repository.update(unsaved)
 
 
 def test_default_config_uses_secret_from_environment(

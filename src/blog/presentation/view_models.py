@@ -22,7 +22,7 @@ class PostViewModel:
     subtitle: str
     date: str
     body: str
-    author: str
+    author_name: str
     img_url: str
 
 
@@ -41,6 +41,7 @@ class HomeViewModel:
 
     page: PageViewModel
     posts: list[PostViewModel]
+    is_admin: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,6 +50,7 @@ class PostPageViewModel:
 
     site_name: str
     post: PostViewModel
+    is_admin: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,7 +92,7 @@ def to_post_view_model(post: BlogPost) -> PostViewModel:
         subtitle=post.subtitle,
         date=post.date,
         body=post.body,
-        author=post.author,
+        author_name=post.author.name,
         img_url=post.img_url,
     )
 

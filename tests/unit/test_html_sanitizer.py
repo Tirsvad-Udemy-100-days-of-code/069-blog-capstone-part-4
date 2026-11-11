@@ -8,10 +8,12 @@ from datetime import date
 
 from blog.application.dto import PostContent
 from blog.application.use_cases import CreatePost, EditPost
+from blog.domain.user import User
 from blog.infrastructure.html_sanitizer import BleachHtmlSanitizer
 from tests.unit.fakes import FixedClock, InMemoryPostRepository
 
 SANITIZER = BleachHtmlSanitizer()
+AUTHOR = User(1, "admin@example.com", "hash", "Admin")
 
 
 def test_sanitize_strips_script_tag() -> None:
@@ -56,9 +58,9 @@ def test_sanitize_empty_string_stays_empty() -> None:
 def test_create_post_stores_sanitized_body() -> None:
     """@brief CreatePost stores only the cleaned body."""
     repository = InMemoryPostRepository()
-    content = PostContent("t", "s", "/i.jpg", "a", "<p>x</p><script>bad()</script>")
+    content = PostContent("t", "s", "/i.jpg", "<p>x</p><script>bad()</script>")
     use_case = CreatePost(repository, FixedClock(date(2026, 11, 5)), SANITIZER)
-    post = use_case.execute(content)
+    post = use_case.execute(content, AUTHOR)
     assert "<script" not in post.body
     assert repository.get(1).body == post.body
 
@@ -68,9 +70,9 @@ def test_edit_post_stores_sanitized_body() -> None:
     repository = InMemoryPostRepository()
     clock = FixedClock(date(2026, 11, 5))
     CreatePost(repository, clock, SANITIZER).execute(
-        PostContent("t", "s", "/i.jpg", "a", "<p>x</p>")
+        PostContent("t", "s", "/i.jpg", "<p>x</p>"), AUTHOR
     )
     edited = EditPost(repository, SANITIZER).execute(
-        1, PostContent("t", "s", "/i.jpg", "a", '<p onclick="x()">y</p>')
+        1, PostContent("t", "s", "/i.jpg", '<p onclick="x()">y</p>')
     )
     assert edited.body == "<p>y</p>"

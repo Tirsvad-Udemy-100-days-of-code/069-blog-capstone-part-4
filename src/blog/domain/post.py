@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from blog.constants import DATE_FORMAT_MONTH_PATTERN
+from blog.domain.user import User
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,7 +20,7 @@ class BlogPost:
     subtitle: str
     date: str
     body: str
-    author: str
+    author: User
     img_url: str
 
 
