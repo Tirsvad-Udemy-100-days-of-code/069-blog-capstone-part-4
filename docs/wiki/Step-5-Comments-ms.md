@@ -11,23 +11,22 @@ Benarkan pengguna yang log masuk memberi komen pada catatan. Tambah `CommentForm
 Jadual `comments` dengan dua kunci asing (`author_id` dan `post_id`), hubungan pada `User` dan `BlogPost`, dan laluan `/post/<int:post_id>` yang menerima `GET` dan `POST`. Pengguna tanpa log masuk diberi mesej dan dialihkan ke `/login`.
 
 ```python
-class Comment(db.Model):
+class CommentModel(Base):
     __tablename__ = "comments"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    comment_author = relationship("User", back_populates="comments")
-    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
-    parent_post = relationship("BlogPost", back_populates="comments")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    comment_author: Mapped[UserModel] = relationship(back_populates="comments")
+    post_id: Mapped[int] = mapped_column(ForeignKey("blog_posts.id"), nullable=False)
+    parent_post: Mapped[PostModel] = relationship(back_populates="comments")
 ```
 
 ## Rupanya
 
-![Benarkan mana-mana pengguna menambah komen](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
+![Borang komen](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
 
-![Benarkan mana-mana pengguna menambah komen](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comments-list.png)
+![Komen tanpa log masuk: mesej kilat dan alih ke log masuk](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comment-login-required.png)
 
-Imej ini ialah ilustrasi dengan data contoh, dilukis untuk repositori ini; ia bukan tangkapan skrin projek kursus.
+![Komen dengan avatar](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05c-comments-list.png)
 
 ## Apa yang kami perolehi
 

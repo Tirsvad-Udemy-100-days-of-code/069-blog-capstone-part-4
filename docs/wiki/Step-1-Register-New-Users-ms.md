@@ -11,25 +11,25 @@ Benarkan orang mendaftar di `/register`. Buat `RegisterForm`, jadual `User`, cin
 `RegisterForm`, jadual `users` dan laluan `/register` yang menyimpan kata laluan yang dicincang dan digaram. `login_user()` dipanggil sebaik sahaja pengguna disimpan.
 
 ```python
-class RegisterForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    submit = SubmitField("Sign Me Up!")
+def register() -> str | Response:
+    form = RegisterForm()
+    if form.validate_on_submit():
+        try:
+            user = current_use_cases().register_user.execute(form.to_registration())
+        except EmailAlreadyRegisteredError:
+            flash(FLASH_ALREADY_REGISTERED)
+            return redirect(url_for("login"))
+        login_user(LoginUser(user))
+        return redirect(url_for("get_all_posts"))
+    ...
 
-hashed = generate_password_hash(form.password.data, method="pbkdf2:sha256", salt_length=8)
-new_user = User(email=form.email.data, name=form.name.data, password=hashed)
-db.session.add(new_user)
-db.session.commit()
-login_user(new_user)
-return redirect(url_for("get_all_posts"))
+# infrastructure/password_hasher.py
+generate_password_hash(password, method="pbkdf2:sha256", salt_length=8)
 ```
 
 ## Rupanya
 
-![Daftarkan pengguna baharu](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-01-register-form.png)
-
-Imej ini ialah ilustrasi dengan data contoh, dilukis untuk repositori ini; ia bukan tangkapan skrin projek kursus.
+![Borang pendaftaran](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-01-register-form.png)
 
 ## Apa yang kami perolehi
 

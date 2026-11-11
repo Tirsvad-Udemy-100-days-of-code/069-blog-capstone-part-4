@@ -11,21 +11,19 @@ Link every blog post to its author. Make a bidirectional one-to-many relationshi
 A foreign key `author_id` on `blog_posts`, `relationship()` with `back_populates` on both sides, and a fresh `blog.db`. Templates use `post.author.name`.
 
 ```python
-class User(UserMixin, db.Model):
+class UserModel(Base):
     __tablename__ = "users"
-    posts = relationship("BlogPost", back_populates="author")
+    posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
 
-class BlogPost(db.Model):
+class PostModel(Base):
     __tablename__ = "blog_posts"
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    author = relationship("User", back_populates="posts")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    author: Mapped[UserModel] = relationship(back_populates="posts")
 ```
 
 ## What it looks like
 
-![Create a relational database](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-relational-schema.png)
-
-The image is an illustration with example data, drawn for this repository; it is not a capture of the course project.
+![Users, posts and comments in blog.db](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-database-relations.png)
 
 ## What we gained
 

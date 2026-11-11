@@ -8,30 +8,28 @@ Pengguna berdaftar pertama (id 1) ialah pentadbir dan satu-satunya yang boleh me
 
 ## Apa yang kami bina
 
-Dekorator `admin_only` yang dibina seperti `@login_required` dengan `functools.wraps`. Templat juga menguji `current_user.id == 1`, jadi butang disembunyikan, tetapi hanya dekorator yang melindungi laluan.
+Dekorator `admin_only` yang dibina seperti `@login_required` dengan `functools.wraps`. Templat menerima bendera `is_admin` yang dikira daripada peraturan domain (id pengguna 1), jadi butang disembunyikan, tetapi hanya dekorator yang melindungi laluan.
 
 ```python
-def admin_only(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_user.id != 1:
-            return abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
+def admin_only[**Params, Result](view: Callable[Params, Result]) -> Callable[Params, Result]:
+    @wraps(view)
+    def guarded(*args: Params.args, **kwargs: Params.kwargs) -> Result:
+        if not current_user_is_admin():
+            abort(403)
+        return view(*args, **kwargs)
 
-@app.route("/new-post", methods=["GET", "POST"])
-@admin_only
-def add_new_post():
-    ...
+    return guarded
+
+# domain/user.py: user id 1 is the admin (ADMIN_USER_ID in constants.py)
 ```
 
 ## Rupanya
 
-![Lindungi laluan](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03a-admin-only-buttons.png)
+![Paparan pentadbir: Create New Post, Edit dan Delete](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03a-admin-home.png)
 
-![Lindungi laluan](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03b-403-forbidden.png)
+![Paparan ahli: tiada kawalan pentadbir](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03b-member-home.png)
 
-Imej ini ialah ilustrasi dengan data contoh, dilukis untuk repositori ini; ia bukan tangkapan skrin projek kursus.
+![403 untuk ahli pada /new-post](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03c-403-forbidden.png)
 
 ## Apa yang kami perolehi
 

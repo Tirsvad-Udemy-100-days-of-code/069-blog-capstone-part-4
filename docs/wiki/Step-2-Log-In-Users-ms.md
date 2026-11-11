@@ -11,21 +11,28 @@ Benarkan pengguna berdaftar log masuk di `/login` dengan e-mel dan kata laluan. 
 `LoginForm` dan laluan `/login`. E-mel atau kata laluan yang salah dijawab dengan `flash()` dan pengguna kekal pada borang.
 
 ```python
-user = db.session.execute(db.select(User).where(User.email == form.email.data)).scalar()
-if not user:
-    flash("That email does not exist, please try again.")
-elif not check_password_hash(user.password, form.password.data):
-    flash("Password incorrect, please try again.")
-else:
-    login_user(user)
-    return redirect(url_for("get_all_posts"))
+def login() -> str | Response:
+    form = LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = current_use_cases().authenticate_user.execute(
+                form.email.data or "", form.password.data or ""
+            )
+        except UnknownEmailError:
+            flash(FLASH_UNKNOWN_EMAIL)
+        except InvalidCredentialsError:
+            flash(FLASH_WRONG_PASSWORD)
+        else:
+            login_user(LoginUser(user))
+            return redirect(url_for("get_all_posts"))
+    ...
 ```
 
 ## Rupanya
 
-![Log masuk pengguna berdaftar](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02-login-form.png)
+![Borang log masuk](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02a-login-form.png)
 
-Imej ini ialah ilustrasi dengan data contoh, dilukis untuk repositori ini; ia bukan tangkapan skrin projek kursus.
+![Kata laluan salah dipaparkan sebagai mesej kilat](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02b-login-wrong-password.png)
 
 ## Apa yang kami perolehi
 

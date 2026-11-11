@@ -11,16 +11,16 @@ Show a profile picture next to every comment. The `flask-gravatar` package is no
 A small helper that lowercases and hashes the email and returns the avatar URL. `post.html` shows it next to each comment.
 
 ```python
-def gravatar_url(email, size=100):
-    digest = hashlib.sha256(email.strip().lower().encode("utf-8")).hexdigest()
-    return f"https://www.gravatar.com/avatar/{digest}?s={size}&d=retro&r=g"
+class GravatarAvatarProvider:
+    def avatar_url(self, email: str) -> str:
+        digest = hashlib.sha256(normalise_email(email).encode()).hexdigest()
+        query = urlencode({"s": GRAVATAR_SIZE, "d": GRAVATAR_DEFAULT_IMAGE, "r": GRAVATAR_RATING})
+        return f"{GRAVATAR_BASE_URL}/{digest}?{query}"
 ```
 
 ## What it looks like
 
-![Add Gravatar profile pictures](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-06-gravatar.png)
-
-The image is an illustration with example data, drawn for this repository; it is not a capture of the course project.
+![Gravatar avatars](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-06-gravatar-avatars.png)
 
 ## What we gained
 
