@@ -20,6 +20,27 @@ class HtmlSanitizer(Protocol):
         ...
 
 
+class PasswordHasher(Protocol):
+    """@brief Turns passwords into salted hashes and checks them."""
+
+    def hash(self, password: str) -> str:
+        """
+        @brief Make a salted hash of a password.
+        @param password The plain password.
+        @return The hash, which is safe to store.
+        """
+        ...
+
+    def verify(self, password_hash: str, password: str) -> bool:
+        """
+        @brief Check a password against a stored hash.
+        @param password_hash The stored hash.
+        @param password The plain password to check.
+        @return True when they match.
+        """
+        ...
+
+
 class Clock(Protocol):
     """@brief Tells today's date."""
 

@@ -16,3 +16,12 @@ class PostContent:
     img_url: str
     author: str
     body: str
+
+
+@dataclass(frozen=True, slots=True)
+class Registration:
+    """@brief What a person enters to sign up."""
+
+    email: str
+    password: str
+    name: str

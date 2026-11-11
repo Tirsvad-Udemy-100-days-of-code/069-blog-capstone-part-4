@@ -28,11 +28,26 @@
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('get_all_posts') }}">Home</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('about') }}">About</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('contact') }}">Contact</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('logout') }}">Log Out</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('login') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ url_for('register') }}">Register</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
         </nav>
         {% block header %}{% endblock %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="container px-4 px-lg-5 mt-4">
+            {% for message in messages %}
+            <div class="alert alert-warning" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
         <!-- Footer-->
         <footer class="border-top">

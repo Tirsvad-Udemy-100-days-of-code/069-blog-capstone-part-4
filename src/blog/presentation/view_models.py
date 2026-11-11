@@ -6,6 +6,8 @@
 
 from dataclasses import dataclass
 
+from flask_wtf import FlaskForm
+
 from blog.constants import APP_NAME
 from blog.domain.post import BlogPost
 from blog.presentation.forms import PostForm
@@ -64,6 +66,14 @@ class FormPageViewModel:
     page: PageViewModel
     form: PostForm
     post_id: int | None
+
+
+@dataclass(frozen=True, slots=True)
+class AuthFormPageViewModel:
+    """@brief A page that holds the register or login form."""
+
+    page: PageViewModel
+    form: FlaskForm
 
 
 def to_post_view_model(post: BlogPost) -> PostViewModel:

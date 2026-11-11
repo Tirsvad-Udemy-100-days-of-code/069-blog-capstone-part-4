@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "bootstrap5/form.html" import render_form %}
+{% set site_name = view.page.site_name %}
+{% block header %}
+{% with page=view.page, image_url=url_for('static', filename='assets/img/post-bg.jpg') %}{% include "masthead.html" %}{% endwith %}
+{% endblock %}
+{% block content %}
+<main class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                {{ render_form(view.form, novalidate=True) }}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

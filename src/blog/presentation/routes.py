@@ -4,9 +4,7 @@
 @brief Route functions: each calls a use case and renders a view model.
 """
 
-from typing import cast
-
-from flask import Flask, current_app, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for
 from werkzeug.wrappers import Response
 
 from blog.constants import (
@@ -23,8 +21,9 @@ from blog.constants import (
     PAGE_TITLE_NOT_FOUND,
 )
 from blog.domain.errors import PostNotFoundError
+from blog.presentation.auth_routes import register_auth_routes
 from blog.presentation.forms import PostForm
-from blog.presentation.services import UseCases
+from blog.presentation.services import current_use_cases
 from blog.presentation.view_models import (
     FormPageViewModel,
     HomeViewModel,
@@ -34,24 +33,15 @@ from blog.presentation.view_models import (
     to_post_view_model,
 )
 
-USE_CASES_KEY = "blog_use_cases"
-"""@brief Key under which the composition root stores the use cases."""
-
-
-def _use_cases() -> UseCases:
-    """
-    @brief Read the use cases of the running application.
-    @return The use cases.
-    """
-    return cast(UseCases, current_app.extensions[USE_CASES_KEY])
-
 
 def get_all_posts() -> str:
     """
     @brief Show the home page with a preview of every post.
     @return The page.
     """
-    posts = [to_post_view_model(post) for post in _use_cases().list_posts.execute()]
+    posts = [
+        to_post_view_model(post) for post in current_use_cases().list_posts.execute()
+    ]
     view = HomeViewModel(page=make_page(APP_NAME, APP_SUBHEADING), posts=posts)
     return render_template("index.html", view=view)
 
@@ -62,7 +52,7 @@ def show_post(post_id: int) -> str:
     @param post_id The id of the post.
     @return The page; a 404 when the post does not exist.
     """
-    post = to_post_view_model(_use_cases().get_post.execute(post_id))
+    post = to_post_view_model(current_use_cases().get_post.execute(post_id))
     return render_template(
         "post.html", view=PostPageViewModel(site_name=APP_NAME, post=post)
     )
@@ -75,7 +65,7 @@ def add_new_post() -> str | Response:
     """
     form = PostForm()
     if form.validate_on_submit():
-        _use_cases().create_post.execute(form.to_content())
+        current_use_cases().create_post.execute(form.to_content())
         return redirect(url_for("get_all_posts"))
     view = FormPageViewModel(
         page=make_page(PAGE_TITLE_NEW_POST, ""), form=form, post_id=None
@@ -90,7 +80,7 @@ def edit_post(post_id: int) -> str | Response:
     @return The form page, or a redirect to the post after saving; a 404 when
             the post does not exist.
     """
-    use_cases = _use_cases()
+    use_cases = current_use_cases()
     post = to_post_view_model(use_cases.get_post.execute(post_id))
     form = PostForm(
         title=post.title,
@@ -114,7 +104,7 @@ def delete_post(post_id: int) -> Response:
     @param post_id The id of the post.
     @return A redirect to the home page; a 404 when the post does not exist.
     """
-    _use_cases().delete_post.execute(post_id)
+    current_use_cases().delete_post.execute(post_id)
     return redirect(url_for("get_all_posts"))
 
 
@@ -175,5 +165,6 @@ def register_routes(app: Flask) -> None:
     app.add_url_rule("/delete/<int:post_id>", view_func=delete_post, methods=["POST"])
     app.add_url_rule("/about", view_func=about)
     app.add_url_rule("/contact", view_func=contact)
+    register_auth_routes(app)
     app.register_error_handler(PostNotFoundError, handle_post_not_found)
     app.register_error_handler(404, handle_page_not_found)
