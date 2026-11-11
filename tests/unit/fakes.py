@@ -7,8 +7,67 @@
 from dataclasses import replace
 from datetime import date
 
-from blog.domain.errors import PostNotFoundError
+from blog.domain.errors import EmailAlreadyRegisteredError, PostNotFoundError
 from blog.domain.post import BlogPost
+from blog.domain.user import User
+
+
+class InMemoryUserRepository:
+    """@brief A dictionary behind the UserRepository port."""
+
+    def __init__(self) -> None:
+        """@brief Create an empty repository."""
+        self.users: dict[int, User] = {}
+
+    def add(self, user: User) -> User:
+        """
+        @brief Store a user under a new id.
+        @param user The user.
+        @return The stored user.
+        """
+        if self.get_by_email(user.email) is not None:
+            raise EmailAlreadyRegisteredError(user.email)
+        new_id = len(self.users) + 1
+        stored = replace(user, id=new_id)
+        self.users[new_id] = stored
+        return stored
+
+    def get_by_id(self, user_id: int) -> User | None:
+        """
+        @brief Read a user by id.
+        @param user_id The id.
+        @return The user or None.
+        """
+        return self.users.get(user_id)
+
+    def get_by_email(self, email: str) -> User | None:
+        """
+        @brief Read a user by email.
+        @param email The email.
+        @return The user or None.
+        """
+        return next((u for u in self.users.values() if u.email == email), None)
+
+
+class ReversingPasswordHasher:
+    """@brief A fake hasher: the hash is the reversed password with a prefix."""
+
+    def hash(self, password: str) -> str:
+        """
+        @brief Make a fake hash.
+        @param password The plain password.
+        @return The fake hash.
+        """
+        return "fake$" + password[::-1]
+
+    def verify(self, password_hash: str, password: str) -> bool:
+        """
+        @brief Check a password against a fake hash.
+        @param password_hash The hash.
+        @param password The plain password.
+        @return True when they match.
+        """
+        return password_hash == self.hash(password)
 
 
 class InMemoryPostRepository:

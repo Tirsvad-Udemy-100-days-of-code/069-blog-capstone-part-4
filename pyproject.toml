@@ -17,6 +17,8 @@ dependencies = [
     "flask-ckeditor>=0.5",
     "bootstrap-flask>=2.4",
     "bleach>=6.1",
+    "flask-login>=0.6.3",
+    "email-validator>=2.1",
 ]
 
 [project.optional-dependencies]
@@ -42,7 +44,7 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "B", "UP", "N", "S", "ANN"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101"]
+"tests/**" = ["S101", "S105", "S106"]
 
 [tool.mypy]
 strict = true
@@ -51,5 +53,5 @@ explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 # These Flask extensions ship neither type hints nor a py.typed marker.
-module = ["flask_ckeditor", "flask_wtf", "flask_bootstrap"]
+module = ["flask_ckeditor", "flask_wtf", "flask_bootstrap", "flask_login"]
 ignore_missing_imports = true

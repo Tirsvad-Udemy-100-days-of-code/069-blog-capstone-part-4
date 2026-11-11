@@ -117,6 +117,62 @@ ALLOWED_HTML_ATTRIBUTES: Final[Mapping[str, frozenset[str]]] = {
 ALLOWED_HTML_PROTOCOLS: Final[frozenset[str]] = frozenset({"http", "https", "mailto"})
 """@brief URL schemes a post body link or image may use."""
 
+EMAIL_MAX_LENGTH: Final[int] = 250
+"""@brief Longest allowed email address."""
+
+NAME_MAX_LENGTH: Final[int] = 250
+"""@brief Longest allowed user name."""
+
+PASSWORD_HASH_MAX_LENGTH: Final[int] = 250
+"""@brief Room for a stored password hash."""
+
+PASSWORD_HASH_METHOD: Final[str] = "pbkdf2:sha256"  # noqa: S105
+"""@brief Werkzeug hash method for passwords."""
+
+PASSWORD_SALT_LENGTH: Final[int] = 8
+"""@brief Length of the random salt added to each password."""
+
+LABEL_EMAIL: Final[str] = "Email"
+"""@brief Label of the email field."""
+
+LABEL_PASSWORD: Final[str] = "Password"  # noqa: S105
+"""@brief Label of the password field."""
+
+LABEL_USER_NAME: Final[str] = "Name"
+"""@brief Label of the name field of the register form."""
+
+LABEL_REGISTER_SUBMIT: Final[str] = "Sign Me Up!"
+"""@brief Label of the register button."""
+
+LABEL_LOGIN_SUBMIT: Final[str] = "Let Me In!"
+"""@brief Label of the login button."""
+
+MESSAGE_EMAIL_INVALID: Final[str] = "Enter a valid email address."
+"""@brief Validation message for a malformed email."""
+
+FLASH_ALREADY_REGISTERED: Final[str] = (
+    "You've already signed up with that email, log in instead!"
+)
+"""@brief Shown when registering with a known email."""
+
+FLASH_UNKNOWN_EMAIL: Final[str] = "That email does not exist, please try again."
+"""@brief Shown when logging in with an unknown email."""
+
+FLASH_WRONG_PASSWORD: Final[str] = "Password incorrect, please try again."  # noqa: S105
+"""@brief Shown when logging in with a wrong password."""
+
+PAGE_TITLE_REGISTER: Final[str] = "Register"
+"""@brief Heading of the register page."""
+
+PAGE_SUBTITLE_REGISTER: Final[str] = "Start contributing to the blog!"
+"""@brief Sub heading of the register page."""
+
+PAGE_TITLE_LOGIN: Final[str] = "Log In"
+"""@brief Heading of the login page."""
+
+PAGE_SUBTITLE_LOGIN: Final[str] = "Welcome back!"
+"""@brief Sub heading of the login page."""
+
 PAGE_TITLE_NEW_POST: Final[str] = "New Post"
 """@brief Heading of the create page."""
 

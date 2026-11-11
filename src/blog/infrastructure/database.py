@@ -11,7 +11,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from blog.constants import (
     AUTHOR_MAX_LENGTH,
     DATE_MAX_LENGTH,
+    EMAIL_MAX_LENGTH,
     IMG_URL_MAX_LENGTH,
+    NAME_MAX_LENGTH,
+    PASSWORD_HASH_MAX_LENGTH,
     SUBTITLE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
 )
@@ -23,6 +26,21 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 """@brief The extension; the composition root binds it to the application."""
+
+
+class UserModel(Base):
+    """@brief Row of the ``users`` table."""
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(
+        String(EMAIL_MAX_LENGTH), unique=True, nullable=False
+    )
+    password: Mapped[str] = mapped_column(
+        String(PASSWORD_HASH_MAX_LENGTH), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String(NAME_MAX_LENGTH), nullable=False)
 
 
 class PostModel(Base):

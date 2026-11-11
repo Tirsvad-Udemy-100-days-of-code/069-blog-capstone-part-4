@@ -5,6 +5,9 @@
 """
 
 from dataclasses import dataclass
+from typing import cast
+
+from flask import current_app
 
 from blog.application.use_cases import (
     CreatePost,
@@ -13,6 +16,10 @@ from blog.application.use_cases import (
     GetPost,
     ListPosts,
 )
+from blog.application.user_use_cases import AuthenticateUser, GetUser, RegisterUser
+
+USE_CASES_KEY = "blog_use_cases"
+"""@brief Key under which the composition root stores the use cases."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,3 +31,14 @@ class UseCases:
     create_post: CreatePost
     edit_post: EditPost
     delete_post: DeletePost
+    register_user: RegisterUser
+    authenticate_user: AuthenticateUser
+    get_user: GetUser
+
+
+def current_use_cases() -> UseCases:
+    """
+    @brief Read the use cases of the running application.
+    @return The use cases.
+    """
+    return cast(UseCases, current_app.extensions[USE_CASES_KEY])
