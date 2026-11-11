@@ -320,7 +320,7 @@ def main() -> None:
     if not names:
         raise SystemExit("Name a step, or use --all. Steps: " + ", ".join(STEPS))
     # Fixed command inside the container: this interpreter and a script of this folder.
-    # nosemgrep: opengrep.selected-rules.python.lang.security.audit.dangerous-subprocess-use-audit
+    # nosemgrep: opengrep.selected-rules.python.lang.security.audit.dangerous-subprocess-use-audit  # noqa: E501
     subprocess.run(  # noqa: S603
         [sys.executable, str(SCRIPTS_DIR / "seed_example_data.py")], check=True
     )
@@ -328,7 +328,7 @@ def main() -> None:
         "BLOG_SECRET_KEY": secrets.token_hex(),
         "PATH": "/usr/local/bin:/usr/bin:/bin",
     }
-    # nosemgrep: opengrep.selected-rules.python.lang.security.audit.dangerous-subprocess-use-audit
+    # nosemgrep: opengrep.selected-rules.python.lang.security.audit.dangerous-subprocess-use-audit  # noqa: E501
     server = subprocess.Popen([sys.executable, "-m", "blog"], env=environment)  # noqa: S603
     try:
         wait_for_server(server)
