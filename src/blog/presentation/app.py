@@ -12,6 +12,7 @@ from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_wtf import CSRFProtect
 
+from blog.application.comment_use_cases import AddComment, ListComments
 from blog.application.use_cases import (
     CreatePost,
     DeletePost,
@@ -22,7 +23,9 @@ from blog.application.use_cases import (
 from blog.application.user_use_cases import AuthenticateUser, GetUser, RegisterUser
 from blog.constants import INSTANCE_DIR_NAME
 from blog.infrastructure.clock import SystemClock
+from blog.infrastructure.comment_repository import SqlAlchemyCommentRepository
 from blog.infrastructure.database import db
+from blog.infrastructure.gravatar import GravatarAvatarProvider
 from blog.infrastructure.html_sanitizer import BleachHtmlSanitizer
 from blog.infrastructure.password_hasher import WerkzeugPasswordHasher
 from blog.infrastructure.post_repository import SqlAlchemyPostRepository
@@ -57,6 +60,7 @@ def create_app(config: Mapping[str, object] | None = None) -> Flask:
     sanitizer = BleachHtmlSanitizer()
     user_repository = SqlAlchemyUserRepository()
     hasher = WerkzeugPasswordHasher()
+    comment_repository = SqlAlchemyCommentRepository()
     app.extensions[USE_CASES_KEY] = UseCases(
         list_posts=ListPosts(repository),
         get_post=GetPost(repository),
@@ -66,6 +70,8 @@ def create_app(config: Mapping[str, object] | None = None) -> Flask:
         register_user=RegisterUser(user_repository, hasher),
         authenticate_user=AuthenticateUser(user_repository, hasher),
         get_user=GetUser(user_repository),
+        add_comment=AddComment(comment_repository, sanitizer),
+        list_comments=ListComments(comment_repository, GravatarAvatarProvider()),
     )
     init_login_manager(app)
     register_routes(app)

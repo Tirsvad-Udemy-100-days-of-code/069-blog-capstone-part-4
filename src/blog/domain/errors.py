@@ -47,3 +47,11 @@ class InvalidCredentialsError(ValueError):
     def __init__(self) -> None:
         """@brief Create the error."""
         super().__init__("The password is incorrect")
+
+
+class EmptyCommentError(ValueError):
+    """@brief Raised when a comment has no text."""
+
+    def __init__(self) -> None:
+        """@brief Create the error."""
+        super().__init__("A comment needs some text")

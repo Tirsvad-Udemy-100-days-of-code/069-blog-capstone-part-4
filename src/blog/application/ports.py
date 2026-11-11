@@ -19,6 +19,26 @@ class HtmlSanitizer(Protocol):
         """
         ...
 
+    def text_of(self, html: str) -> str:
+        """
+        @brief Read the plain text of a piece of HTML.
+        @param html The HTML.
+        @return The text with every tag removed.
+        """
+        ...
+
+
+class AvatarProvider(Protocol):
+    """@brief Gives the avatar image address of a person."""
+
+    def avatar_url(self, email: str) -> str:
+        """
+        @brief Build the avatar address of an email.
+        @param email The email.
+        @return The address of the image.
+        """
+        ...
+
 
 class PasswordHasher(Protocol):
     """@brief Turns passwords into salted hashes and checks them."""

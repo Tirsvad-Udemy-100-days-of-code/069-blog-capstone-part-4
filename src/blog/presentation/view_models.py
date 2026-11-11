@@ -10,7 +10,16 @@ from flask_wtf import FlaskForm
 
 from blog.constants import APP_NAME
 from blog.domain.post import BlogPost
-from blog.presentation.forms import PostForm
+from blog.presentation.forms import CommentForm, PostForm
+
+
+@dataclass(frozen=True, slots=True)
+class CommentViewModel:
+    """@brief One comment as a template shows it."""
+
+    author_name: str
+    text: str
+    avatar_url: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +33,7 @@ class PostViewModel:
     body: str
     author_name: str
     img_url: str
+    comments: tuple[CommentViewModel, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,6 +61,7 @@ class PostPageViewModel:
     site_name: str
     post: PostViewModel
     is_admin: bool
+    form: CommentForm
 
 
 @dataclass(frozen=True, slots=True)

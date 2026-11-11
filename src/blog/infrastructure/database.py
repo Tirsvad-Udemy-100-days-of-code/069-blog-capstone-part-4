@@ -41,12 +41,15 @@ class UserModel(Base):
     )
     name: Mapped[str] = mapped_column(String(NAME_MAX_LENGTH), nullable=False)
     posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
+    comments: Mapped[list["CommentModel"]] = relationship(
+        back_populates="comment_author"
+    )
 
 
 class PostModel(Base):
-    """@brief Row of the ``blog_post`` table."""
+    """@brief Row of the ``blog_posts`` table."""
 
-    __tablename__ = "blog_post"
+    __tablename__ = "blog_posts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(TITLE_MAX_LENGTH), nullable=False)
@@ -56,3 +59,19 @@ class PostModel(Base):
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     author: Mapped[UserModel] = relationship(back_populates="posts")
     img_url: Mapped[str] = mapped_column(String(IMG_URL_MAX_LENGTH), nullable=False)
+    comments: Mapped[list["CommentModel"]] = relationship(
+        back_populates="parent_post", cascade="all, delete-orphan"
+    )
+
+
+class CommentModel(Base):
+    """@brief Row of the ``comments`` table."""
+
+    __tablename__ = "comments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    comment_author: Mapped[UserModel] = relationship(back_populates="comments")
+    post_id: Mapped[int] = mapped_column(ForeignKey("blog_posts.id"), nullable=False)
+    parent_post: Mapped[PostModel] = relationship(back_populates="comments")

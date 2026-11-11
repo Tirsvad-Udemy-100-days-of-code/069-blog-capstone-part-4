@@ -9,6 +9,7 @@ from typing import cast
 
 from flask import current_app
 
+from blog.application.comment_use_cases import AddComment, ListComments
 from blog.application.use_cases import (
     CreatePost,
     DeletePost,
@@ -34,6 +35,8 @@ class UseCases:
     register_user: RegisterUser
     authenticate_user: AuthenticateUser
     get_user: GetUser
+    add_comment: AddComment
+    list_comments: ListComments
 
 
 def current_use_cases() -> UseCases:

@@ -15,6 +15,8 @@ from blog.constants import (
     IMG_URL_MAX_LENGTH,
     IMG_URL_PATTERN,
     LABEL_BODY,
+    LABEL_COMMENT,
+    LABEL_COMMENT_SUBMIT,
     LABEL_EMAIL,
     LABEL_IMG_URL,
     LABEL_LOGIN_SUBMIT,
@@ -115,3 +117,12 @@ class LoginForm(FlaskForm):  # type: ignore[misc]
         LABEL_PASSWORD, validators=[DataRequired(MESSAGE_REQUIRED)]
     )
     submit = SubmitField(LABEL_LOGIN_SUBMIT)
+
+
+class CommentForm(FlaskForm):  # type: ignore[misc]
+    """@brief Form used to comment on a post: one editor field and a button."""
+
+    comment_text = CKEditorField(
+        LABEL_COMMENT, validators=[DataRequired(MESSAGE_REQUIRED)]
+    )
+    submit = SubmitField(LABEL_COMMENT_SUBMIT)

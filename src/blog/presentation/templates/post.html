@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% from "bootstrap5/form.html" import render_form %}
 {% set site_name = view.site_name %}
+{% block head_extra %}{{ ckeditor.load() }}{% endblock %}
 {% block header %}
 <header class="masthead" style="background-image: url('{{ view.post.img_url }}')">
     <div class="container position-relative px-4 px-lg-5">
@@ -33,6 +35,20 @@
                     </form>
                 </div>
                 {% endif %}
+                <hr class="my-4" />
+                {{ render_form(view.form, novalidate=True) }}
+                {{ ckeditor.config(name='comment_text') }}
+                <ul class="list-unstyled mt-4">
+                    {% for comment in view.post.comments %}
+                    <li class="d-flex mb-4">
+                        <img class="rounded-circle me-3" width="50" height="50" src="{{ comment.avatar_url }}" alt="Avatar of {{ comment.author_name }}" />
+                        <div>
+                            {{ comment.text|safe }}
+                            <span class="small text-muted">{{ comment.author_name }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
