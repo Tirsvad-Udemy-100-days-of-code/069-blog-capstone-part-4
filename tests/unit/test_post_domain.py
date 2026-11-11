@@ -11,6 +11,7 @@ import pytest
 
 from blog.domain.errors import PostNotFoundError
 from blog.domain.post import BlogPost, format_post_date
+from blog.domain.user import User, is_admin
 
 
 def test_format_post_date_has_no_zero_padding() -> None:
@@ -30,7 +31,9 @@ def test_format_post_date_leap_day() -> None:
 
 def test_blog_post_is_immutable() -> None:
     """@brief A post cannot be changed after it is made."""
-    post = BlogPost(None, "t", "s", "d", "<p>b</p>", "a", "/i.jpg")
+    post = BlogPost(
+        None, "t", "s", "d", "<p>b</p>", User(1, "a@b.c", "h", "A"), "/i.jpg"
+    )
     with pytest.raises(FrozenInstanceError):
         post.title = "other"  # type: ignore[misc]
 
@@ -41,3 +44,20 @@ def test_post_not_found_error_keeps_id_and_message() -> None:
     assert error.post_id == 7
     assert "7" in str(error)
     assert isinstance(error, LookupError)
+
+
+def test_is_admin_true_for_user_id_one() -> None:
+    """@brief The first registered user is the admin."""
+    assert is_admin(User(1, "a@b.c", "h", "A"))
+
+
+def test_is_admin_false_for_other_user_ids() -> None:
+    """@brief Any other id is not the admin."""
+    assert not is_admin(User(2, "a@b.c", "h", "A"))
+    assert not is_admin(User(0, "a@b.c", "h", "A"))
+
+
+def test_is_admin_false_for_visitor_and_unsaved_user() -> None:
+    """@brief A visitor (None) and a user without id are not the admin."""
+    assert not is_admin(None)
+    assert not is_admin(User(None, "a@b.c", "h", "A"))

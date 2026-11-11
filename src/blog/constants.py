@@ -19,6 +19,9 @@ DEFAULT_HOST: Final[str] = "127.0.0.1"
 DEFAULT_PORT: Final[int] = 5002
 """@brief Port the development server listens on."""
 
+ADMIN_USER_ID: Final[int] = 1
+"""@brief Id of the admin: the first registered user."""
+
 DATABASE_FILE_NAME: Final[str] = "blog.db"
 """@brief SQLite file name, created in the instance folder."""
 
@@ -46,26 +49,17 @@ SUBTITLE_MAX_LENGTH: Final[int] = 250
 DATE_MAX_LENGTH: Final[int] = 250
 """@brief Longest stored post date text."""
 
-AUTHOR_MAX_LENGTH: Final[int] = 250
-"""@brief Longest allowed author name."""
-
 IMG_URL_MAX_LENGTH: Final[int] = 500
 """@brief Longest allowed image address."""
 
 IMG_URL_PATTERN: Final[str] = r"^(https?://|/)\S+$"
 """@brief An image address is an http(s) URL or a path on this site."""
 
-DEFAULT_POST_IMAGE_URL: Final[str] = "/static/assets/img/post-bg.jpg"
-"""@brief Header image of the seeded posts."""
-
 LABEL_TITLE: Final[str] = "Blog Post Title"
 """@brief Label of the title field."""
 
 LABEL_SUBTITLE: Final[str] = "Subtitle"
 """@brief Label of the subtitle field."""
-
-LABEL_AUTHOR: Final[str] = "Your Name"
-"""@brief Label of the author field."""
 
 LABEL_IMG_URL: Final[str] = "Blog Image URL"
 """@brief Label of the image address field."""
@@ -179,6 +173,9 @@ PAGE_TITLE_NEW_POST: Final[str] = "New Post"
 PAGE_TITLE_EDIT_POST: Final[str] = "Edit Post"
 """@brief Heading of the edit page."""
 
+PAGE_TITLE_FORBIDDEN: Final[str] = "Not allowed"
+"""@brief Heading of the 403 page."""
+
 PAGE_TITLE_NOT_FOUND: Final[str] = "Post not found"
 """@brief Heading of the 404 page."""
 
@@ -206,34 +203,3 @@ CONTACT_TEXT: Final[str] = (
     "the contact form is not connected yet."
 )
 """@brief Text of the contact page."""
-
-SEED_POSTS: Final[tuple[Mapping[str, str], ...]] = (
-    {
-        "title": "Why I keep a blog",
-        "subtitle": "Writing things down makes them stick.",
-        "date": "November 1, 2026",
-        "body": "<p>Explaining a topic in my own words shows what I have "
-        "not understood yet.</p>",
-        "author": "Example Author",
-        "img_url": DEFAULT_POST_IMAGE_URL,
-    },
-    {
-        "title": "Learning Flask in small steps",
-        "subtitle": "Routes first, then templates, then a database.",
-        "date": "November 5, 2026",
-        "body": "<p>A route is a function. A template turns data into a page. "
-        "A database keeps the data between runs.</p>",
-        "author": "Example Author",
-        "img_url": DEFAULT_POST_IMAGE_URL,
-    },
-    {
-        "title": "Keeping the rules apart from the framework",
-        "subtitle": "Layers make the code easier to test.",
-        "date": "November 9, 2026",
-        "body": "<p>When the business rules do not import Flask, they can be "
-        "tested without a web server.</p>",
-        "author": "Example Author",
-        "img_url": DEFAULT_POST_IMAGE_URL,
-    },
-)
-"""@brief Example posts inserted when the table is empty."""

@@ -11,11 +11,9 @@ from wtforms.validators import DataRequired, Email, Length, Regexp
 
 from blog.application.dto import PostContent, Registration
 from blog.constants import (
-    AUTHOR_MAX_LENGTH,
     EMAIL_MAX_LENGTH,
     IMG_URL_MAX_LENGTH,
     IMG_URL_PATTERN,
-    LABEL_AUTHOR,
     LABEL_BODY,
     LABEL_EMAIL,
     LABEL_IMG_URL,
@@ -54,23 +52,18 @@ class PostForm(FlaskForm):  # type: ignore[misc]
             Regexp(IMG_URL_PATTERN, message=MESSAGE_IMG_URL_INVALID),
         ],
     )
-    author = StringField(
-        LABEL_AUTHOR,
-        validators=[DataRequired(MESSAGE_REQUIRED), Length(max=AUTHOR_MAX_LENGTH)],
-    )
     body = CKEditorField(LABEL_BODY, validators=[DataRequired(MESSAGE_REQUIRED)])
     submit = SubmitField(LABEL_SUBMIT)
 
     def to_content(self) -> PostContent:
         """
         @brief Read the validated fields as use case input.
-        @return What the author wrote.
+        @return What the author wrote (the author is the logged in user).
         """
         return PostContent(
             title=self.title.data or "",
             subtitle=self.subtitle.data or "",
             img_url=self.img_url.data or "",
-            author=self.author.data or "",
             body=self.body.data or "",
         )
 

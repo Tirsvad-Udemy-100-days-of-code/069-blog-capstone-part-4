@@ -9,6 +9,7 @@ from sqlalchemy import select
 from blog.domain.errors import PostNotFoundError
 from blog.domain.post import BlogPost
 from blog.infrastructure.database import PostModel, db
+from blog.infrastructure.user_repository import user_to_domain
 
 
 def _to_domain(row: PostModel) -> BlogPost:
@@ -23,7 +24,7 @@ def _to_domain(row: PostModel) -> BlogPost:
         subtitle=row.subtitle,
         date=row.date,
         body=row.body,
-        author=row.author,
+        author=user_to_domain(row.author),
         img_url=row.img_url,
     )
 
@@ -38,7 +39,9 @@ def _copy_to_row(post: BlogPost, row: PostModel) -> None:
     row.subtitle = post.subtitle
     row.date = post.date
     row.body = post.body
-    row.author = post.author
+    if post.author.id is None:
+        raise ValueError("A post needs a stored author")
+    row.author_id = post.author.id
     row.img_url = post.img_url
 
 

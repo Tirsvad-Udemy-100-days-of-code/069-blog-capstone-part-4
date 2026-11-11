@@ -15,12 +15,13 @@ from blog.application.use_cases import (
     ListPosts,
 )
 from blog.domain.errors import PostNotFoundError
+from blog.domain.user import User
 from blog.infrastructure.html_sanitizer import BleachHtmlSanitizer
-from blog.infrastructure.seed import seed_posts_if_empty
 from tests.unit.fakes import FixedClock, InMemoryPostRepository
 
+AUTHOR = User(1, "ann@example.com", "hash", "Ann")
 CONTENT = PostContent(
-    title="Title", subtitle="Sub", img_url="/img.jpg", author="Ann", body="<p>x</p>"
+    title="Title", subtitle="Sub", img_url="/img.jpg", body="<p>x</p>"
 )
 
 
@@ -35,10 +36,11 @@ def test_create_post_stores_post_dated_today(
     repository: InMemoryPostRepository, clock: FixedClock
 ) -> None:
     """@brief A new post gets an id and today's date."""
-    post = CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT)
+    post = CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT, AUTHOR)
     assert post.id == 1
     assert post.date == "November 5, 2026"
     assert post.title == "Title"
+    assert post.author == AUTHOR
     assert ListPosts(repository).execute() == [post]
 
 
@@ -46,7 +48,9 @@ def test_get_post_returns_stored_post(
     repository: InMemoryPostRepository, clock: FixedClock
 ) -> None:
     """@brief A stored post can be read by id."""
-    created = CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT)
+    created = CreatePost(repository, clock, BleachHtmlSanitizer()).execute(
+        CONTENT, AUTHOR
+    )
     assert GetPost(repository).execute(1) == created
 
 
@@ -62,11 +66,12 @@ def test_edit_post_changes_text_and_keeps_date(
     repository: InMemoryPostRepository, clock: FixedClock
 ) -> None:
     """@brief Editing replaces the text but not the date or id."""
-    CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT)
-    new = PostContent("New", "New sub", "/n.jpg", "Bob", "<p>n</p>")
+    CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT, AUTHOR)
+    new = PostContent("New", "New sub", "/n.jpg", "<p>n</p>")
     edited = EditPost(repository, BleachHtmlSanitizer()).execute(1, new)
     assert (edited.id, edited.date) == (1, "November 5, 2026")
-    assert (edited.title, edited.author, edited.body) == ("New", "Bob", "<p>n</p>")
+    assert (edited.title, edited.body) == ("New", "<p>n</p>")
+    assert edited.author == AUTHOR
     assert repository.get(1) == edited
 
 
@@ -82,7 +87,7 @@ def test_delete_post_removes_post(
     repository: InMemoryPostRepository, clock: FixedClock
 ) -> None:
     """@brief A deleted post is gone."""
-    CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT)
+    CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT, AUTHOR)
     DeletePost(repository).execute(1)
     assert ListPosts(repository).execute() == []
 
@@ -93,20 +98,3 @@ def test_delete_post_raises_when_id_unknown(
     """@brief Deleting an unknown post is refused."""
     with pytest.raises(PostNotFoundError):
         DeletePost(repository).execute(1)
-
-
-def test_seed_inserts_posts_when_empty(
-    repository: InMemoryPostRepository,
-) -> None:
-    """@brief An empty store receives the three example posts."""
-    assert seed_posts_if_empty(repository) == 3
-    assert len(repository.list_all()) == 3
-
-
-def test_seed_does_nothing_when_posts_exist(
-    repository: InMemoryPostRepository, clock: FixedClock
-) -> None:
-    """@brief A store with posts is left alone."""
-    CreatePost(repository, clock, BleachHtmlSanitizer()).execute(CONTENT)
-    assert seed_posts_if_empty(repository) == 0
-    assert len(repository.list_all()) == 1

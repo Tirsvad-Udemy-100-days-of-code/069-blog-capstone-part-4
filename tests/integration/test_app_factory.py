@@ -12,6 +12,7 @@ import pytest
 from blog import __main__ as entry_point
 from blog.constants import DATABASE_FILE_NAME, DEFAULT_HOST, DEFAULT_PORT
 from blog.domain.post import BlogPost
+from blog.domain.user import User
 from blog.infrastructure.clock import SystemClock
 from blog.infrastructure.database import db
 from blog.presentation.app import create_app
@@ -62,4 +63,6 @@ def test_system_clock_returns_a_date() -> None:
 def test_to_post_view_model_rejects_unsaved_post() -> None:
     """@brief A post without id cannot be shown."""
     with pytest.raises(ValueError, match="id"):
-        to_post_view_model(BlogPost(None, "t", "s", "d", "b", "a", "/i"))
+        to_post_view_model(
+            BlogPost(None, "t", "s", "d", "b", User(1, "a@b.c", "h", "A"), "/i")
+        )

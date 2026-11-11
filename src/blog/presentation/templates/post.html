@@ -8,7 +8,7 @@
                 <div class="post-heading">
                     <h1>{{ view.post.title }}</h1>
                     <h2 class="subheading">{{ view.post.subtitle }}</h2>
-                    <span class="meta">Posted by {{ view.post.author }} on {{ view.post.date }}</span>
+                    <span class="meta">Posted by {{ view.post.author_name }} on {{ view.post.date }}</span>
                 </div>
             </div>
         </div>
@@ -22,6 +22,7 @@
             <div class="col-md-10 col-lg-8 col-xl-7">
                 {# The body is sanitised by the CreatePost and EditPost use cases before it is stored. #}
                 {{ view.post.body|safe }}
+                {% if view.is_admin %}
                 <div class="d-flex justify-content-end mt-4">
                     <a class="btn btn-primary text-uppercase me-2" href="{{ url_for('edit_post', post_id=view.post.id) }}">Edit Post</a>
                     {# False positive below: Flask-WTF, the form carries csrf_token(). #}
@@ -31,6 +32,7 @@
                         <button class="btn btn-danger text-uppercase" type="submit">Delete Post</button>
                     </form>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
