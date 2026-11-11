@@ -11,21 +11,28 @@ Lad registrerede brugere logge ind på `/login` med e-mail og adgangskode. Find 
 En `LoginForm` og en `/login`-rute. En forkert e-mail eller adgangskode besvares med `flash()`, og brugeren bliver på formularen.
 
 ```python
-user = db.session.execute(db.select(User).where(User.email == form.email.data)).scalar()
-if not user:
-    flash("That email does not exist, please try again.")
-elif not check_password_hash(user.password, form.password.data):
-    flash("Password incorrect, please try again.")
-else:
-    login_user(user)
-    return redirect(url_for("get_all_posts"))
+def login() -> str | Response:
+    form = LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = current_use_cases().authenticate_user.execute(
+                form.email.data or "", form.password.data or ""
+            )
+        except UnknownEmailError:
+            flash(FLASH_UNKNOWN_EMAIL)
+        except InvalidCredentialsError:
+            flash(FLASH_WRONG_PASSWORD)
+        else:
+            login_user(LoginUser(user))
+            return redirect(url_for("get_all_posts"))
+    ...
 ```
 
 ## Sådan ser det ud
 
-![Log registrerede brugere ind](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02-login-form.png)
+![Loginformularen](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02a-login-form.png)
 
-Billedet er en illustration med eksempeldata, tegnet til dette repository; det er ikke et screenshot af kursets projekt.
+![En forkert adgangskode vises som flash-besked](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-02b-login-wrong-password.png)
 
 ## Hvad vi fik ud af det
 

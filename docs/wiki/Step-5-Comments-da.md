@@ -11,23 +11,22 @@ Lad indloggede brugere kommentere indlæg. Tilføj en `CommentForm` med et CKEdi
 En `comments`-tabel med to fremmednøgler (`author_id` og `post_id`), relationer på `User` og `BlogPost` og en `/post/<int:post_id>`-rute, der accepterer `GET` og `POST`. Anonyme brugere får en besked og sendes til `/login`.
 
 ```python
-class Comment(db.Model):
+class CommentModel(Base):
     __tablename__ = "comments"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    comment_author = relationship("User", back_populates="comments")
-    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
-    parent_post = relationship("BlogPost", back_populates="comments")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    comment_author: Mapped[UserModel] = relationship(back_populates="comments")
+    post_id: Mapped[int] = mapped_column(ForeignKey("blog_posts.id"), nullable=False)
+    parent_post: Mapped[PostModel] = relationship(back_populates="comments")
 ```
 
 ## Sådan ser det ud
 
-![Lad alle brugere skrive kommentarer](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
+![Kommentarformularen](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
 
-![Lad alle brugere skrive kommentarer](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comments-list.png)
+![Anonym kommentar: flash og omdirigering til login](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comment-login-required.png)
 
-Billedet er en illustration med eksempeldata, tegnet til dette repository; det er ikke et screenshot af kursets projekt.
+![Kommentarer med avatarer](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05c-comments-list.png)
 
 ## Hvad vi fik ud af det
 

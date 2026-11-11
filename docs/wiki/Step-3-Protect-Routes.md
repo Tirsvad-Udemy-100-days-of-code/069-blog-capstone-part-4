@@ -8,30 +8,28 @@ The first registered user (id 1) is the admin and the only one who may create, e
 
 ## What we built
 
-An `admin_only` decorator built like `@login_required` with `functools.wraps`. Templates also test `current_user.id == 1`, so the buttons are hidden, but only the decorator protects the routes.
+An `admin_only` decorator built like `@login_required` with `functools.wraps`. Templates get an `is_admin` flag computed from the domain rule (user id 1), so the buttons are hidden, but only the decorator protects the routes.
 
 ```python
-def admin_only(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_user.id != 1:
-            return abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
+def admin_only[**Params, Result](view: Callable[Params, Result]) -> Callable[Params, Result]:
+    @wraps(view)
+    def guarded(*args: Params.args, **kwargs: Params.kwargs) -> Result:
+        if not current_user_is_admin():
+            abort(403)
+        return view(*args, **kwargs)
 
-@app.route("/new-post", methods=["GET", "POST"])
-@admin_only
-def add_new_post():
-    ...
+    return guarded
+
+# domain/user.py: user id 1 is the admin (ADMIN_USER_ID in constants.py)
 ```
 
 ## What it looks like
 
-![Protect routes](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03a-admin-only-buttons.png)
+![Admin view: Create New Post, Edit and Delete](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03a-admin-home.png)
 
-![Protect routes](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03b-403-forbidden.png)
+![Member view: no admin controls](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03b-member-home.png)
 
-The image is an illustration with example data, drawn for this repository; it is not a capture of the course project.
+![403 for a member on /new-post](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-03c-403-forbidden.png)
 
 ## What we gained
 

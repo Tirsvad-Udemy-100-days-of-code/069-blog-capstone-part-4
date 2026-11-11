@@ -11,16 +11,16 @@ Vis et profilbillede ved hver kommentar. Pakken `flask-gravatar` vedligeholdes i
 En lille hjælper, der gør e-mailen til små bogstaver, hasher den og returnerer billedadressen. `post.html` viser billedet ved hver kommentar.
 
 ```python
-def gravatar_url(email, size=100):
-    digest = hashlib.sha256(email.strip().lower().encode("utf-8")).hexdigest()
-    return f"https://www.gravatar.com/avatar/{digest}?s={size}&d=retro&r=g"
+class GravatarAvatarProvider:
+    def avatar_url(self, email: str) -> str:
+        digest = hashlib.sha256(normalise_email(email).encode()).hexdigest()
+        query = urlencode({"s": GRAVATAR_SIZE, "d": GRAVATAR_DEFAULT_IMAGE, "r": GRAVATAR_RATING})
+        return f"{GRAVATAR_BASE_URL}/{digest}?{query}"
 ```
 
 ## Sådan ser det ud
 
-![Tilføj Gravatar-profilbilleder](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-06-gravatar.png)
-
-Billedet er en illustration med eksempeldata, tegnet til dette repository; det er ikke et screenshot af kursets projekt.
+![Gravatar-avatarer](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-06-gravatar-avatars.png)
 
 ## Hvad vi fik ud af det
 

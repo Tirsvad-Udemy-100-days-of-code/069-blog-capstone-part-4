@@ -11,23 +11,22 @@ Let logged-in users comment on posts. Add a `CommentForm` with a CKEditor field,
 A `comments` table with two foreign keys (`author_id` and `post_id`), relationships on `User` and `BlogPost`, and a `/post/<int:post_id>` route that accepts `GET` and `POST`. Anonymous users are flashed a message and redirected to `/login`.
 
 ```python
-class Comment(db.Model):
+class CommentModel(Base):
     __tablename__ = "comments"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    comment_author = relationship("User", back_populates="comments")
-    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
-    parent_post = relationship("BlogPost", back_populates="comments")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    comment_author: Mapped[UserModel] = relationship(back_populates="comments")
+    post_id: Mapped[int] = mapped_column(ForeignKey("blog_posts.id"), nullable=False)
+    parent_post: Mapped[PostModel] = relationship(back_populates="comments")
 ```
 
 ## What it looks like
 
-![Allow any user to add comments](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
+![The comment form](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05a-comment-form.png)
 
-![Allow any user to add comments](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comments-list.png)
+![Anonymous comment: flash and redirect to login](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05b-comment-login-required.png)
 
-The image is an illustration with example data, drawn for this repository; it is not a capture of the course project.
+![Comments with avatars](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-05c-comments-list.png)
 
 ## What we gained
 

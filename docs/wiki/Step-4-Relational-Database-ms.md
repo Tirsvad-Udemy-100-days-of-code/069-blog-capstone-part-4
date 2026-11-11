@@ -11,21 +11,19 @@ Kaitkan setiap catatan blog dengan penulisnya. Buat hubungan satu-ke-banyak dua 
 Kunci asing `author_id` pada `blog_posts`, `relationship()` dengan `back_populates` pada kedua-dua belah, dan `blog.db` yang baharu. Templat menggunakan `post.author.name`.
 
 ```python
-class User(UserMixin, db.Model):
+class UserModel(Base):
     __tablename__ = "users"
-    posts = relationship("BlogPost", back_populates="author")
+    posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
 
-class BlogPost(db.Model):
+class PostModel(Base):
     __tablename__ = "blog_posts"
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    author = relationship("User", back_populates="posts")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    author: Mapped[UserModel] = relationship(back_populates="posts")
 ```
 
 ## Rupanya
 
-![Cipta pangkalan data hubungan](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-relational-schema.png)
-
-Imej ini ialah ilustrasi dengan data contoh, dilukis untuk repositori ini; ia bukan tangkapan skrin projek kursus.
+![Pengguna, catatan dan komen dalam blog.db](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-database-relations.png)
 
 ## Apa yang kami perolehi
 

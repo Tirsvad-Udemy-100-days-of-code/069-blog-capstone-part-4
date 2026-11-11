@@ -11,25 +11,25 @@ Let people sign up at `/register`. Create a `RegisterForm`, a `User` table, hash
 A `RegisterForm`, a `users` table and a `/register` route that stores a hashed and salted password. `login_user()` is called right after the user is saved.
 
 ```python
-class RegisterForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    submit = SubmitField("Sign Me Up!")
+def register() -> str | Response:
+    form = RegisterForm()
+    if form.validate_on_submit():
+        try:
+            user = current_use_cases().register_user.execute(form.to_registration())
+        except EmailAlreadyRegisteredError:
+            flash(FLASH_ALREADY_REGISTERED)
+            return redirect(url_for("login"))
+        login_user(LoginUser(user))
+        return redirect(url_for("get_all_posts"))
+    ...
 
-hashed = generate_password_hash(form.password.data, method="pbkdf2:sha256", salt_length=8)
-new_user = User(email=form.email.data, name=form.name.data, password=hashed)
-db.session.add(new_user)
-db.session.commit()
-login_user(new_user)
-return redirect(url_for("get_all_posts"))
+# infrastructure/password_hasher.py
+generate_password_hash(password, method="pbkdf2:sha256", salt_length=8)
 ```
 
 ## What it looks like
 
-![Register new users](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-01-register-form.png)
-
-The image is an illustration with example data, drawn for this repository; it is not a capture of the course project.
+![The register form](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-01-register-form.png)
 
 ## What we gained
 

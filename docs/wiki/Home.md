@@ -2,16 +2,18 @@
 
 # Blog Capstone Part 4: Day 69, users and comments
 
-This wiki explains what each lecture step of Day 69 of the Udemy course "100 Days of Code: The Complete Python Pro Bootcamp" taught us. The lecture finishes the blog: users can register and log in, only the admin manages posts, posts and comments are linked to their authors, logged-in users comment, and every commenter gets a Gravatar picture. The images are illustrations with example data, drawn for this repository.
+This wiki explains what each lecture step of Day 69 of the Udemy course "100 Days of Code: The Complete Python Pro Bootcamp" taught us. The lecture finishes the blog: users can register and log in, only the admin manages posts, posts and comments are linked to their authors, logged-in users comment, and every commenter gets a Gravatar picture. The screenshots come from the blog of this repository, run in a Docker container with example data.
 
 ## Run it
 
-This repository holds documentation only. To follow along, create a local `.venv`, upgrade pip and install the packages that come with the course download (the full instructions are in the [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
+The repository holds the blog written for this lecture. Create a local `.venv`, upgrade pip, install the pinned packages and start the blog (the full instructions are in the [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
 
 ```bash
 python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip install -e .
+python -m blog
 ```
 
 ## The six steps

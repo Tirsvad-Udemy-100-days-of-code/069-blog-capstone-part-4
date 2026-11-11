@@ -11,21 +11,19 @@ Knyt hvert blogindlæg til sin forfatter. Lav en tovejs en-til-mange-relation me
 En fremmednøgle `author_id` på `blog_posts`, `relationship()` med `back_populates` på begge sider og en ny `blog.db`. Skabelonerne bruger `post.author.name`.
 
 ```python
-class User(UserMixin, db.Model):
+class UserModel(Base):
     __tablename__ = "users"
-    posts = relationship("BlogPost", back_populates="author")
+    posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
 
-class BlogPost(db.Model):
+class PostModel(Base):
     __tablename__ = "blog_posts"
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    author = relationship("User", back_populates="posts")
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    author: Mapped[UserModel] = relationship(back_populates="posts")
 ```
 
 ## Sådan ser det ud
 
-![Opret en relationel database](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-relational-schema.png)
-
-Billedet er en illustration med eksempeldata, tegnet til dette repository; det er ikke et screenshot af kursets projekt.
+![Brugere, indlæg og kommentarer i blog.db](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/raw/branch/main/docs/images/step-04-database-relations.png)
 
 ## Hvad vi fik ud af det
 

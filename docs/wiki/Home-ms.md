@@ -2,16 +2,18 @@
 
 # Blog Capstone Part 4: Hari 69, pengguna dan komen
 
-Wiki ini menerangkan apa yang diajar oleh setiap langkah kuliah hari ke-69 kursus Udemy "100 Days of Code: The Complete Python Pro Bootcamp". Kuliah ini melengkapkan blog: pengguna boleh mendaftar dan log masuk, hanya pentadbir menguruskan catatan, catatan dan komen dikaitkan dengan penulisnya, pengguna yang log masuk memberi komen, dan setiap pemberi komen mendapat gambar Gravatar. Imej ialah ilustrasi dengan data contoh, dilukis untuk repositori ini.
+Wiki ini menerangkan apa yang diajar oleh setiap langkah kuliah hari ke-69 kursus Udemy "100 Days of Code: The Complete Python Pro Bootcamp". Kuliah ini melengkapkan blog: pengguna boleh mendaftar dan log masuk, hanya pentadbir menguruskan catatan, catatan dan komen dikaitkan dengan penulisnya, pengguna yang log masuk memberi komen, dan setiap pemberi komen mendapat gambar Gravatar. Tangkapan skrin datang daripada blog repositori ini sendiri, dijalankan dalam bekas Docker dengan data contoh.
 
 ## Jalankannya
 
-Repositori ini hanya mengandungi dokumentasi. Untuk mengikut, cipta `.venv` setempat, naik taraf pip dan pasang pakej yang disertakan dalam muat turun kursus (arahan lengkap ada dalam [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
+Repositori ini mengandungi blog yang ditulis untuk kuliah ini. Cipta `.venv` setempat, naik taraf pip, pasang pakej yang dikunci dan mulakan blog (arahan lengkap ada dalam [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
 
 ```bash
 python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip install -e .
+python -m blog
 ```
 
 ## Enam langkah

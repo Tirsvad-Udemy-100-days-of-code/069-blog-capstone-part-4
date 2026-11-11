@@ -2,16 +2,18 @@
 
 # Blog Capstone Part 4: Dag 69, brugere og kommentarer
 
-Denne wiki forklarer, hvad hvert lektionstrin på dag 69 af Udemy-kurset "100 Days of Code: The Complete Python Pro Bootcamp" lærte os. Lektionen gør bloggen færdig: brugere kan registrere sig og logge ind, kun administratoren styrer indlæg, indlæg og kommentarer er knyttet til deres forfattere, indloggede brugere kommenterer, og hver kommentator får et Gravatar-billede. Billederne er illustrationer med eksempeldata, tegnet til dette repository.
+Denne wiki forklarer, hvad hvert lektionstrin på dag 69 af Udemy-kurset "100 Days of Code: The Complete Python Pro Bootcamp" lærte os. Lektionen gør bloggen færdig: brugere kan registrere sig og logge ind, kun administratoren styrer indlæg, indlæg og kommentarer er knyttet til deres forfattere, indloggede brugere kommenterer, og hver kommentator får et Gravatar-billede. Skærmbillederne stammer fra dette repositorys egen blog, kørt i en Docker-container med eksempeldata.
 
 ## Kør det
 
-Dette repository indeholder kun dokumentation. For at følge med skal du oprette en lokal `.venv`, opgradere pip og installere de pakker, der følger med kursets download (hele vejledningen står i [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
+Repositoryet indeholder den blog, der er skrevet til denne lektion. Opret en lokal `.venv`, opgrader pip, installer de fastlåste pakker og start bloggen (hele vejledningen står i [README](https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4)):
 
 ```bash
 python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip install -e .
+python -m blog
 ```
 
 ## De seks trin
