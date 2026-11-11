@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | pending |
+| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [335e45c] |
 
 ---
 
@@ -64,3 +64,4 @@ Types with no instance yet have no row. `-` in Upstream means foundational, in D
 [RC-004]: ./reviews/rc-004-mil-002.md
 [RC-005]: ./reviews/rc-005-mil-003.md
 [RC-006]: ./reviews/rc-006-pp.md
+[335e45c]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/335e45c12d38b764705336eefde51af3c16930b2

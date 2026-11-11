@@ -11,8 +11,8 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | pending |
-| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-006; autonomous, not independent | pending |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [335e45c] |
+| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-006; autonomous, not independent | [335e45c] |
 
 ---
 
@@ -80,3 +80,4 @@ A No-Go on a gateway moves every later gateway by the rework time and may move t
 [MIL-001]: ./milestones/mil-001-project-setup.md
 [MIL-002]: ./milestones/mil-002-readme.md
 [MIL-003]: ./milestones/mil-003-wiki.md
+[335e45c]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/335e45c12d38b764705336eefde51af3c16930b2

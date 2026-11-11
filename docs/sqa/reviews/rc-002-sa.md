@@ -9,7 +9,7 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | pending |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [335e45c] |
 
 ---
 
@@ -66,3 +66,4 @@ Go — every Mandatory criterion passes in both tables. Stand-in decision: crite
 [SA-001]: ../../stakeholder-analysis.md
 [QC-SA-001]: ../../../framework/qc/artifacts/qc-stakeholder-analysis.md
 [QC-LANG-001]: ../../../framework/qc/artifacts/qc-language-domain.md
+[335e45c]: https://git.tirsystem.com/Tirsvad-Udemy-100-days-of-code/069-blog-capstone-part-4/commit/335e45c12d38b764705336eefde51af3c16930b2
