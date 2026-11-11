@@ -11,14 +11,14 @@
 ## Version History
 | Date | Status | Author | Reviewer | Change | Commit |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Initial version | [335e45c] |
-| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-001; autonomous, not independent | [335e45c] |
+| 2026-11-11 | Proposed | Jens Tirsvad Nielsen | AI as stand-in for S01 | Scope amended: the application code is in scope (S01 corrected the first prompt) | pending |
+| 2026-11-11 | Accepted | Jens Tirsvad Nielsen | AI as stand-in for S01 | Accepted on a Go review, RC-008; autonomous, not independent | pending |
 
 ---
 
 ## Executive Summary
 
-Day 69 of Udemy's "100 Days of Code: The Complete Python Pro Bootcamp" finishes the blog capstone by adding users: registering and logging in with Flask-Login, protecting routes with an `admin_only` decorator, a one-to-many relational database (users, posts and comments), comments for logged-in users and Gravatar profile pictures. This project turns that lecture into a public learning reference: a README and a three-language wiki (English, Danish, Bahasa Malaysia) that explain each lecture step with an image and say what was learned. No application code is delivered; the project holds documentation and project configuration only.
+Day 69 of Udemy's "100 Days of Code: The Complete Python Pro Bootcamp" finishes the blog capstone by adding users: registering and logging in with Flask-Login, protecting routes with an `admin_only` decorator, a one-to-many relational database (users, posts and comments), comments for logged-in users and Gravatar profile pictures. This project builds the blog the lecture describes and turns the lecture into a public learning reference: a runnable Flask application written from scratch under `src/` with tests under `tests/`, a README and a three-language wiki (English, Danish, Bahasa Malaysia) that explain each lecture step with a real screenshot and say what was learned. The course's own starter and solution are not used; the blog is written for this repository, with the assignment's route and function names.
 
 ## Methodological and Standards Foundation
 
@@ -34,11 +34,13 @@ A single repository can show what each lecture step produces (an image) and what
 
 ## Objectives
 
-1. Publish a README that walks through every Day 69 lecture step (six step groups) with an image and instructions to set up a local `.venv`.
+1. Publish a README that walks through every Day 69 lecture step (six step groups) with a screenshot and instructions to set up a local `.venv`, run the blog and run its tests.
 2. Publish a wiki in English, Danish and Bahasa Malaysia that explains what each step teaches.
 3. Describe the repository on the git host with a description and topics.
-4. Provide project configuration (`pyproject.toml`, Python `.gitignore`, `Doxyfile`) that a later coding phase can use unchanged.
+4. Provide project configuration (`pyproject.toml`, Python `.gitignore`, `Doxyfile`) for the code.
 5. Keep a traceable history: one branch and pull request per milestone.
+6. Build a working Flask blog: posts (read, create, edit, delete), user registration and login, an admin-only authorisation rule, a one-to-many relational database (users, posts, comments), comments for logged-in users and Gravatar pictures.
+7. Cover the logic with pytest tests and review the code against the programming checklist before each pull request.
 
 ## Scope
 
@@ -46,14 +48,16 @@ A single repository can show what each lecture step produces (an image) and what
 
 - README (framework template) for the Day 69 lecture steps, with images.
 - Wiki pages in `docs/wiki/` in English, Danish (`-da`) and Bahasa Malaysia (`-ms`), with images and "what we gained" sections.
-- One illustration per lecture step, drawn for this repository from the lecture description and labelled as an illustration.
+- The blog application in `src/` (Python 3.13 or newer, Flask, Flask-SQLAlchemy, Flask-Login, Flask-WTF, Flask-CKEditor, Bootstrap-Flask), with its pytest tests in `tests/`.
+- A real screenshot of each lecture step, taken from this blog running in a Docker container.
+- Architecture and design: Clean Architecture with the presentation pattern recorded in an ADR.
 - Repository description and topics on the git host.
 - `pyproject.toml` (Python 3.13 or newer, pytest), Python `.gitignore`, `Doxyfile`, documented `.venv` setup with `python -m pip install --upgrade pip`.
 - A local opengrep scan before each push.
 
 ### Out of Scope
 
-- Writing application source code or tests under `src/` and `tests/` (the folders are reserved for a later phase).
+- Hosting or deploying the blog, and any copy of the course starter or solution.
 - Reproducing the lecture's video or course material beyond short descriptions and own illustrations.
 - Publishing the course starting or end archive in the repository.
 
@@ -77,17 +81,19 @@ The project supports the participant's learning goal in the bootcamp and the pra
 
 | # | Criterion | Target | Measure |
 | --- | --- | --- | --- |
-| 1 | Lecture steps covered | All 6 steps in README and wiki | Count of steps with text and image |
+| 1 | Lecture steps covered | All 6 steps in README and wiki, each with a real screenshot | Count of steps with text and screenshot |
 | 2 | Wiki languages | 3 (en, da, ms) with the same page set | `check-languages.sh` and page list |
 | 3 | Repository metadata | Description and at least 5 topics set | Host API response |
 | 4 | Review | Every artifact `Accepted` with a `Go` review | `RC-*` records |
 | 5 | Security scan | 0 opengrep findings before each push | opengrep output |
+| 6 | Working blog | All four lecture requirements implemented; tests pass | `python -m pytest` result and the screenshots |
 
 ## Risks
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| The course end project is not available to this repository, and no code is written | Real screenshots cannot be captured | Draw illustrations with example data, label each as an illustration, record the source of each, and ask S01 to confirm at plan acceptance (precedent: Day 67) |
+| The course starter and end project are not available, and the Day 67 repository holds no code | The blog must be written from scratch | Build it from the lecture description with the assignment's names; S01 confirmed that code is in scope |
+| The blog needs runtime dependencies | S03 expected none | Keep them to the packages the lecture names, list them in `pyproject.toml` and the README |
 | The lecture material is copyrighted by the course author | Legal exposure | Summarise in own words; never reproduce solution code or the course archive |
 | A token leaks into the repository | Credential exposure | Tokens are read from `.env` outside the repository, never printed, never committed |
 | Translations drift from English | Inconsistent wiki | English is authoritative; same page set; `check-languages.sh` |
@@ -98,15 +104,15 @@ The project supports the participant's learning goal in the bootcamp and the pra
 - S01 is Product Owner, developer and reviewer.
 - The Product Owner domain language is English, domain IT.
 - The git host wiki is enabled and the organisation holds `TOKEN_FOR_GITEA_WIKI`.
-- The images are illustrations with example data, because no application code is run.
+- Screenshots come from the blog itself, run in a Docker container with example data.
 
 ## Constraints
 
-- Duration: the whole project is complete by 2026-11-16 (start 2026-11-11).
-- Python 3.13 or newer; a local `.venv`; pytest for tests; constants in `constants.py` when code is written.
-- Doxygen comments in any source code.
-- Documents live under `docs/`; `src/` and `tests/` stay empty in this project.
-- No GUI is run on the host desktop.
+- Duration: the whole project is complete by 2026-11-30 (start 2026-11-11; the first end date, 2026-11-16, covered documentation only).
+- Python 3.13 or newer; a local `.venv`; pytest for tests; constants in `constants.py`.
+- Doxygen comments in the source code.
+- Folder structure `src/`, `tests/`, `docs/`.
+- No GUI or browser test runs on the host desktop; it runs in a Docker container.
 
 ## Cost–Benefit Assessment
 
